@@ -2,76 +2,100 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\Middleware;
+use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Spatie\Permission\Middleware\PermissionMiddleware;
 
-class UserController extends Controller
+
+class UserController extends Controller implements HasMiddleware
 {
-    public function list()
+    public static function middleware(): array
     {
-        $data['getRecord'] = User::getRecord();
-        return view('panel.user.list', $data);
+        return [
+            new Middleware(PermissionMiddleware::using('view user'), only: ['index']),
+            new Middleware(PermissionMiddleware::using('create user'), only: ['create', 'store']),
+            new Middleware(PermissionMiddleware::using('update user'), only: ['edit', 'update']),
+            new Middleware(PermissionMiddleware::using('delete user'), only: ['destroy']),
+        ];
     }
 
-    public function add()
+    public function index()
     {
-        $data['getRole'] = Role::getRecord();
-        return view('panel.user.add', $data);
+        $users = User::get();
+        return view('users.index', ['users' => $users]);
     }
 
-    public function edit($id)
+    public function create()
     {
-        $data['getRecord'] = User::getSingle($id);
-        $data['getRole'] = Role::getRecord();
-        return view('panel.user.edit', $data);
+        $roles = Role::pluck('name', 'name')->all();
+        return view('users.create', ['roles' => $roles]);
     }
 
-    public function insert(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
-            'email' => 'email|required|unique:users',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email',
+            'password' => 'required|string|min:8|max:20',
+            'roles' => 'required'
         ]);
 
-        $user = new User();
-        $user->name = trim($request->name);
-        $user->email = trim($request->email);
-        $user->password = Hash::make($request->password);
-        $user->role_id = trim($request->role_id);
-        $user->save();
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
 
-        return redirect('panel/user')->with('success', 'User successfully created');
+        $user->syncRoles($request->roles);
+
+        return redirect('/users')->with('status', 'User created successfully with roles');
     }
 
-    public function update($id, Request $request)
+    public function edit(User $user)
     {
-        $user = User::getSingle($id);
-        $user->name = trim($request->name);
-        $user->email = trim($request->email);
-        $user->status = trim($request->status);
+        $roles = Role::pluck('name', 'name')->all();
+        $userRoles = $user->roles->pluck('name', 'name')->all();
+        return view('users.edit', [
+            'user' => $user,
+            'roles' => $roles,
+            'userRoles' => $userRoles
+        ]);
+    }
+
+    public function update(Request $request, User $user)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'password' => 'nullable|string|min:8|max:20',
+            'roles' => 'required'
+        ]);
+
+        $data = [
+            'name' => $request->name,
+            'email' => $request->email,
+        ];
+
         if (!empty($request->password)) {
-            $user->password = Hash::make($request->password);
+            $data += [
+                'password' => Hash::make($request->password),
+            ];
         }
-        $user->role_id = trim($request->role_id);
-        $user->save();
 
-        return redirect('panel/user')->with('success', 'User successfully updated');
+        $user->update($data);
+        $user->syncRoles($request->roles);
+
+        return redirect('/users')->with('status', 'User Updated Successfully with roles');
     }
 
-    public function softDelete($id)
+    public function destroy($userId)
     {
-        $user = User::getSingle($id);
-        $user->status = 'Inactive';
-        $user->save();
-        return redirect('panel/user')->with('success', 'User successfully removed');
-    }
+        $user = User::findOrFail($userId);
+        $user->delete();
 
-    public function permanentDelete($id)
-    {
-        $save = User::getSingle($id);
-        $save->delete();
-
-        return redirect('panel/user')->with('success', "User successfully deleted");
+        return redirect('/users')->with('status', 'User Delete Successfully');
     }
 }

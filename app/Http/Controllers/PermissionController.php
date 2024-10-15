@@ -2,30 +2,78 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Permission;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Middleware\PermissionMiddleware;
 
-class PermissionController extends Controller
+class PermissionController extends Controller implements HasMiddleware
 {
-    public function list()
+    public static function middleware(): array
     {
-        $data['getRecord'] = Permission::getRecord();
-        return view('panel.permission.list', $data);
+        return [
+            new Middleware(PermissionMiddleware::using('view permission'), only: ['index']),
+            new Middleware(PermissionMiddleware::using('create permission'), only: ['create', 'store']),
+            new Middleware(PermissionMiddleware::using('update permission'), only: ['edit', 'update']),
+            new Middleware(PermissionMiddleware::using('delete permission'), only: ['destroy']),
+        ];
+    }
+    
+    public function index()
+    {
+        $permissions = Permission::get();
+        return view('role-permission.permissions.index', ['permissions' => $permissions]);
     }
 
-    public function add()
+    public function create()
     {
-        return view('panel.permission.add');
+        return view('role-permission.permissions.create');
     }
 
-    public function insert(Request $request)
+    public function store(Request $request)
     {
-        $save = new Permission;
-        $save->name = $request->name;
-        $save->slug = $request->slug;
-        $save->groupBy = $request->groupby;
-        $save->save();
+        $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'unique:permissions,name'
+            ]
+        ]);
 
-        return redirect('panel/permission')->with('success', "Permission successfully created");
+        Permission::create([
+            'name' => $request->name
+        ]);
+
+        return redirect('permissions')->with('status', 'Permission Created Successfully');
+    }
+
+    public function edit(Permission $permission)
+    {
+        return view('role-permission.permissions.edit', ['permission' => $permission]);
+    }
+
+    public function update(Request $request, Permission $permission)
+    {
+        $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'unique:permissions,name,' . $permission->id
+            ]
+        ]);
+
+        $permission->update([
+            'name' => $request->name
+        ]);
+
+        return redirect('permissions')->with('status', 'Permission Updated Successfully');
+    }
+
+    public function destroy($permissionId)
+    {
+        $permission = Permission::find($permissionId);
+        $permission->delete();
+        return redirect('permissions')->with('status', 'Permission Deleted Successfully');
     }
 }

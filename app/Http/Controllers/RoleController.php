@@ -2,82 +2,110 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Permission;
-use App\Models\PermissionRole;
-use App\Models\Role;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Middleware\PermissionMiddleware;
 
-class RoleController extends Controller
+class RoleController extends Controller implements HasMiddleware
 {
-    public function list()
+    public static function middleware(): array
     {
-        $PermissionRole = PermissionRole::getPermission('role', Auth::user()->role_id);
-        if (empty($PermissionRole)) {
-            abort(404);
-        }
-
-        $data['$PermissionAdd'] = PermissionRole::getPermission('add-role', Auth::user()->role_id);
-        $data['$PermissionEdit'] = PermissionRole::getPermission('edit-role', Auth::user()->role_id);
-        $data['$PermissionDelete'] = PermissionRole::getPermission('delete-role', Auth::user()->role_id);
-        dd($data['$PermissionAdd']);
-
-        $data['getRecord'] = Role::getRecord();
-        return view('panel.role.list', $data);
+        return [
+            new Middleware(PermissionMiddleware::using('view role'), only: ['index']),
+            new Middleware(PermissionMiddleware::using('create role'), only: ['create', 'store', 'addPermissionToRole', 'givePermissionToRole']),
+            new Middleware(PermissionMiddleware::using('update role'), only: ['edit', 'update']),
+            new Middleware(PermissionMiddleware::using('delete role'), only: ['destroy']),
+        ];
     }
 
-    public function add()
+    public function index()
     {
-        $getPermission = Permission::getRecord();
-        $data['getPermission'] = $getPermission;
-        return view('panel.role.add', $data);
+        $roles = Role::get();
+        return view('role-permission.roles.index', ['roles' => $roles]);
     }
 
-    public function insert(Request $request)
+    public function create()
     {
-        $save = new Role;
-        $save->name = $request->name;
-        $save->save();
-
-        PermissionRole::InsertUpdateRecord($request->permission_id, $save->id);
-
-        return redirect('panel/role')->with('success', "Role successfully created");
+        return view('role-permission.roles.create');
     }
 
-    public function edit($id)
+    public function store(Request $request)
     {
-        $data['getRecord'] = Role::getSingle($id);
-        $data['getPermission'] = Permission::getRecord();
-        $data['getRolePermission'] = PermissionRole::getRolePermission($id);
-        return view('panel.role.edit', $data);
+        $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'unique:roles,name'
+            ]
+        ]);
+
+        Role::create([
+            'name' => $request->name
+        ]);
+
+        return redirect('roles')->with('status', 'Role Created Successfully');
     }
 
-    public function update($id, Request $request)
+    public function edit(Role $role)
     {
-        $save = Role::getSingle($id);
-        $save->name = $request->name;
-        $save->status = $request->status;
-        $save->save();
-
-        PermissionRole::InsertUpdateRecord($request->permission_id, $save->id);
-
-        return redirect('panel/role')->with('success', "Role successfully updated");
+        return view('role-permission.roles.edit', [
+            'role' => $role
+        ]);
     }
 
-    public function softDelete($id, Request $request)
+    public function update(Request $request, Role $role)
     {
-        $save = Role::getSingle($id);
-        $save->status = "Inactive";
-        $save->save();
+        $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'unique:roles,name,' . $role->id
+            ]
+        ]);
 
-        return redirect('panel/role')->with('success', "Role successfully removed");
+        $role->update([
+            'name' => $request->name
+        ]);
+
+        return redirect('roles')->with('status', 'Role Updated Successfully');
     }
 
-    public function permanentDelete($id)
+    public function destroy($roleId)
     {
-        $save = Role::getSingle($id);
-        $save->delete();
+        $role = Role::find($roleId);
+        $role->delete();
+        return redirect('roles')->with('status', 'Role Deleted Successfully');
+    }
 
-        return redirect('panel/role')->with('success', "Role successfully deleted");
+    public function addPermissionToRole($roleId)
+    {
+        $permissions = Permission::get();
+        $role = Role::findOrFail($roleId);
+        $rolePermissions = DB::table('role_has_permissions')
+            ->where('role_has_permissions.role_id', $role->id)
+            ->pluck('role_has_permissions.permission_id', 'role_has_permissions.permission_id')
+            ->all();
+
+        return view('role-permission.roles.add-permissions', [
+            'role' => $role,
+            'permissions' => $permissions,
+            'rolePermissions' => $rolePermissions
+        ]);
+    }
+
+    public function givePermissionToRole(Request $request, $roleId)
+    {
+        $request->validate([
+            'permission' => 'required'
+        ]);
+
+        $role = Role::findOrFail($roleId);
+        $role->syncPermissions($request->permission);
+
+        return redirect()->back()->with('status', 'Permissions added to role');
     }
 }

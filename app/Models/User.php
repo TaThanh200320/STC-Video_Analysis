@@ -9,10 +9,13 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens;
+    use HasApiTokens, HasRoles;
+
+    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
     use HasProfilePhoto;
     use Notifiable;
@@ -61,15 +64,5 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    static public function getSingle($id)
-    {
-        return self::find($id);
-    }
-
-    static public function getRecord()
-    {
-        return User::select('users.*', 'role.name as role_name')->join('role', 'role.id', '=', 'users.role_id')->orderBy('users.id', 'asc')->get();
     }
 }
