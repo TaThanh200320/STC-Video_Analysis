@@ -1,7 +1,10 @@
-<div class="sidebar sidebar-dark sidebar-fixed border-end" id="sidebar">
+<div class="sidebar sidebar-narrow-unfoldable sidebar-dark sidebar-fixed border-end" id="sidebar">
     <div class="sidebar-header border-bottom">
         <div class="sidebar-brand">
-            <p style="font-size: 24px">STC Video Analysis</p>
+            <div class="sidebar-brand-full">
+                <p style="font-size: 24px">STC Video Analysis</p>
+            </div>
+            <img src="images/logo.png" alt="Logo" class="sidebar-brand-narrow w-8 h-8">
         </div>
         <button class="btn-close d-lg-none" type="button" data-coreui-dismiss="offcanvas" data-coreui-theme="dark"
             aria-label="Close"

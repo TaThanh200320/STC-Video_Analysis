@@ -8764,10 +8764,10 @@ fieldset:disabled .btn {
 }
 
 .sidebar-narrow:not(.sidebar-end) ~ * {
-    --cui-sidebar-occupy-start: 4rem !important;
+    --cui-sidebar-occupy-start: 4rem;
 }
 .sidebar-narrow.sidebar-end ~ * {
-    --cui-sidebar-occupy-end: 4rem !important;
+    --cui-sidebar-occupy-end: 4rem;
 }
 .sidebar-narrow .nav-link {
     overflow: hidden;
@@ -8777,10 +8777,10 @@ fieldset:disabled .btn {
     position: fixed;
 }
 .sidebar-narrow-unfoldable:not(.sidebar-end) ~ * {
-    --cui-sidebar-occupy-start: 4rem !important;
+    --cui-sidebar-occupy-start: 4rem;
 }
 .sidebar-narrow-unfoldable.sidebar-end ~ * {
-    --cui-sidebar-occupy-end: 4rem !important;
+    --cui-sidebar-occupy-end: 4rem;
 }
 .sidebar-narrow-unfoldable:hover {
     box-shadow: 0 0.5rem 1rem rgba(8, 10, 12, 0.15);
