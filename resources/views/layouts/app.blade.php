@@ -30,8 +30,7 @@
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="assets/favicon/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
-
-
+    <script src="https://cdn.jsdelivr.net/npm/rtsp-relay@1.7.0/browser/index.min.js"></script>
 </head>
 
 <body>
