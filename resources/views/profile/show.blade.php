@@ -11,21 +11,15 @@
         <div class="max-w-7xl mx-auto">
             @if (Laravel\Fortify\Features::canUpdateProfileInformation())
                 @livewire('profile.update-profile-information-form')
-
-                <x-section-border />
-            @endif
-
-            <div class="mt-10 sm:mt-0">
-                @livewire('profile.logout-other-browser-sessions-form')
-            </div>
-
-            @if (Laravel\Jetstream\Jetstream::hasAccountDeletionFeatures())
-                <x-section-border />
-
-                <div class="mt-10 sm:mt-0">
-                    @livewire('profile.delete-user-form')
-                </div>
             @endif
         </div>
+    </div>
+@endsection
+
+@section('subHeader')
+    <div class="flex items-center gap-4">
+        <a class="no-underline text-[#6A6E76]" href="{{ route('profile.show') }}">Profile Information</a>
+        <a class="no-underline text-[#6A6E76]" href="{{ route('profile.authentication') }}">Authentication</a>
+        <a class="no-underline text-[#6A6E76]" href="{{ route('profile.update-password') }}">Update Password</a>
     </div>
 @endsection

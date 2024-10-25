@@ -25,20 +25,20 @@
 
                             <div class="mb-3">
                                 <label for="">Name</label>
-                                <input type="text" name="name" class="form-control" />
+                                <input type="text" name="name" class="form-control" required />
                             </div>
                             <div class="mb-3">
                                 <label for="">Email</label>
-                                <input type="text" name="email" class="form-control" />
+                                <input type="text" name="email" class="form-control" required />
                             </div>
                             <div class="mb-3">
                                 <label for="">Password</label>
-                                <input type="text" name="password" class="form-control" />
+                                <input type="text" name="password" class="form-control" required />
                             </div>
                             <div class="mb-3">
                                 <label for="">Roles</label>
-                                <select name="roles[]" class="form-control" multiple>
-                                    <option value="">Select Role</option>
+                                <select name="roles" class="form-control" aria-label="Default select example">
+                                    <option value="">Select role</option>
                                     @foreach ($roles as $role)
                                         <option value="{{ $role }}">{{ $role }}</option>
                                     @endforeach

@@ -1,6 +1,5 @@
-<footer class="footer px-4">
-    <div><a href="https://coreui.io">CoreUI </a><a
-            href="https://coreui.io/product/free-bootstrap-admin-template/">Bootstrap Admin Template</a> &copy; 2024
-        creativeLabs.</div>
-    <div class="ms-auto">Powered by&nbsp;<a href="https://coreui.io/docs/">CoreUI UI Components</a></div>
+<footer class="footer px-4 text-[12px] mt-4">
+    <div>Copyright &copy; 2024 <a href="https://www.vielina.com/">VIELINA R&D CENTER.</a>
+        All right reserved</div>
+    <div class="ms-auto"><b>Version</b> 1.0.0</div>
 </footer>

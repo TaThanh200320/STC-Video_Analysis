@@ -1,13 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
+    <div>
         <a href="{{ url('users/create') }}" class="btn btn-primary float-end">Add User</a>
     </div>
 
     <table id="datatable" class="table table-striped" style="width:100%">
         <thead>
             <tr>
+                <th>Id</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Roles</th>
@@ -17,6 +18,7 @@
         <tbody>
             @foreach ($users as $user)
                 <tr>
+                    <td>{{ $user->id }}</td>
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
                     <td>

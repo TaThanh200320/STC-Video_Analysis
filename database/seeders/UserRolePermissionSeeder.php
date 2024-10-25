@@ -54,8 +54,7 @@ class UserRolePermissionSeeder extends Seeder
             'email' => 'superadmin@gmail.com',
         ], [
             'name' => 'Super Admin',
-            'email' => 'superadmin@gmail.com',
-            'password' => Hash::make('12345678'),
+            'password' => Hash::make('tathanh200320'),
         ]);
 
         $superAdminUser->assignRole($superAdminRole);
@@ -65,19 +64,17 @@ class UserRolePermissionSeeder extends Seeder
             'email' => 'admin@gmail.com'
         ], [
             'name' => 'Admin',
-            'email' => 'admin@gmail.com',
-            'password' => Hash::make('12345678'),
+            'password' => Hash::make('tathanh200320'),
         ]);
 
         $adminUser->assignRole($adminRole);
 
 
         $editorUser = User::firstOrCreate([
-            'email' => 'editor@gmail.com',
+            'email' => 'tathanh200320@gmail.com',
         ], [
             'name' => 'editor',
-            'email' => 'editor@gmail.com',
-            'password' => Hash::make('12345678'),
+            'password' => Hash::make('tathanh200320'),
         ]);
 
         $editorUser->assignRole($editorRole);

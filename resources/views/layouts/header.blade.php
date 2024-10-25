@@ -65,7 +65,7 @@
             </li>
             <li class="nav-item dropdown"><a class="nav-link py-0 pe-0" data-coreui-toggle="dropdown" href="#"
                     role="button" aria-haspopup="true" aria-expanded="false">
-                    <div class="avatar avatar-md"><img class="avatar-img" src="assets/img/avatars/8.jpg"
+                    <div class="avatar avatar-md"><img class="avatar-img" src="{{ Auth::user()->profile_photo_url }}"
                             alt="user@email.com"></div>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end pt-0">
@@ -76,11 +76,6 @@
                         <svg class="icon me-2">
                             <use xlink:href="node_modules/@coreui/icons/sprites/free.svg#cil-user"></use>
                         </svg> Profile
-                    </a>
-                    <a class="dropdown-item" href="{{ route('profile.update-password') }}">
-                        <svg class="icon me-2">
-                            <use xlink:href="node_modules/@coreui/icons/sprites/free.svg#cil-settings"></use>
-                        </svg> Update Password
                     </a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" method="POST" href="{{ route('logout') }}">
@@ -98,15 +93,28 @@
             </li>
         </ul>
     </div>
-    <div class="container-fluid px-4">
+    <div class="container-fluid px-4 flex justify-between items-center">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb my-0">
-                <li class="breadcrumb-item"><a href="#">Home</a>
-                </li>
-                <li class="breadcrumb-item active">
-                    <span>{{ ucwords(str_replace('-', ' ', last(request()->segments()))) }}</span>
-                </li>
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+
+                @foreach (request()->segments() as $index => $segment)
+                    @if (!is_numeric($segment))
+                        @if ($index + 1 === count(request()->segments()))
+                            <li class="breadcrumb-item active">
+                                <span>{{ ucwords(str_replace('-', ' ', $segment)) }}</span>
+                            </li>
+                        @else
+                            <li class="breadcrumb-item">
+                                <span>{{ ucwords(str_replace('-', ' ', $segment)) }}</span>
+                            </li>
+                        @endif
+                    @endif
+                @endforeach
             </ol>
         </nav>
+        <div id="subHeader">
+            @yield('subHeader')
+        </div>
     </div>
 </header>

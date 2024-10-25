@@ -3,6 +3,7 @@
 <html lang="en">
 
 <head>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <base href="./">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -40,17 +41,20 @@
 </head>
 
 <body>
-    @session('status')
+
+    @if (session('status'))
         <div class="mb-4 font-medium text-sm text-green-600">
-            {{ $value }}
+            {{ session('status') }}
         </div>
-    @endsession
+    @endif
     <div class="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-5">
                     <div class="card-group d-block d-md-flex row">
                         <form class="card col-md-7 p-4 mb-0" method="POST" action="{{ route('login') }}">
+                            <x-validation-errors />
+
                             @csrf
 
                             <div class="card-body">
@@ -64,7 +68,7 @@
                                     <input class="form-control" id="email" type="email" name="email"
                                         :value="old('email')" required autocomplete="username" placeholder="Email">
                                 </div>
-                                <div class="input-group mb-4"><span class="input-group-text">
+                                <div class="input-group mb-3"><span class="input-group-text">
                                         <svg class="icon">
                                             <use
                                                 xlink:href="node_modules/@coreui/icons/sprites/free.svg#cil-lock-locked">
@@ -73,6 +77,12 @@
                                     <input class="form-control" id="password" class="block mt-1 w-full"
                                         type="password" name="password" required autocomplete="current-password"
                                         placeholder="Password">
+                                </div>
+                                <div class="block mb-4">
+                                    <label for="remember_me" class="flex items-center">
+                                        <x-checkbox id="remember_me" name="remember" />
+                                        <span class="ml-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
+                                    </label>
                                 </div>
                                 <div class="row">
                                     <div class="col-6">

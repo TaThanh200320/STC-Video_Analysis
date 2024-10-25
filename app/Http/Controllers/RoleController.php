@@ -25,12 +25,12 @@ class RoleController extends Controller implements HasMiddleware
     public function index()
     {
         $roles = Role::get();
-        return view('role-permission.roles.index', ['roles' => $roles]);
+        return view('roles.index', ['roles' => $roles]);
     }
 
     public function create()
     {
-        return view('role-permission.roles.create');
+        return view('roles.create');
     }
 
     public function store(Request $request)
@@ -52,7 +52,7 @@ class RoleController extends Controller implements HasMiddleware
 
     public function edit(Role $role)
     {
-        return view('role-permission.roles.edit', [
+        return view('roles.edit', [
             'role' => $role
         ]);
     }
@@ -90,7 +90,7 @@ class RoleController extends Controller implements HasMiddleware
             ->pluck('role_has_permissions.permission_id', 'role_has_permissions.permission_id')
             ->all();
 
-        return view('role-permission.roles.add-permissions', [
+        return view('roles.add-permissions', [
             'role' => $role,
             'permissions' => $permissions,
             'rolePermissions' => $rolePermissions

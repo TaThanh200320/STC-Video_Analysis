@@ -2,7 +2,7 @@
     <div class="sidebar-header border-bottom">
         <div class="sidebar-brand">
             <div class="sidebar-brand-full">
-                <p style="font-size: 24px">STC Video Analysis</p>
+                <p class="!mb-0" style="font-size: 24px">STC Video Analysis</p>
             </div>
             <img src="images/logo.png" alt="Logo" class="sidebar-brand-narrow w-8 h-8">
         </div>
@@ -21,12 +21,16 @@
                 </svg> Users</a></li>
         <li class="nav-item"><a class="nav-link" href="{{ url('roles') }}">
                 <svg class="nav-icon">
-                    <use xlink:href="node_modules/@coreui/icons/sprites/free.svg#cil-pencil"></use>
+                    <use xlink:href="node_modules/@coreui/icons/sprites/free.svg#cil-address-book"></use>
                 </svg> Roles</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url('permissions') }}">
+        <li class="nav-item"><a class="nav-link" href="{{ route('camera.show') }}">
                 <svg class="nav-icon">
-                    <use xlink:href="node_modules/@coreui/icons/sprites/free.svg#cil-pencil"></use>
-                </svg> Permissions</a></li>
+                    <use xlink:href="node_modules/@coreui/icons/sprites/free.svg#cil-camera"></use>
+                </svg> Cameras</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('locations.areas') }}">
+                <svg class="nav-icon">
+                    <use xlink:href="node_modules/@coreui/icons/sprites/free.svg#cil-location-pin"></use>
+                </svg> Locations</a></li>
     </ul>
     <div class="sidebar-footer border-top d-none d-md-flex">
         <button class="sidebar-toggler" type="button" data-coreui-toggle="unfoldable"></button>

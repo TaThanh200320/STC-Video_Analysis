@@ -4,7 +4,6 @@
     <div class="grid grid-cols-12 gap-3">
         @foreach ($cameras as $camera)
             <div class="col-span-4">
-                <h2>{{ $camera['name'] }}</h2>
                 <canvas class="!w-full !h-[360px]" id="canvas-{{ $camera['id'] }}"></canvas>
             </div>
         @endforeach
