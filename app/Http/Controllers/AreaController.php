@@ -3,19 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Area;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class AreaController extends Controller
 {
     public function index()
     {
-        $areas = Area::get();
-        return view('locations.areas.index', ['areas' => $areas]);
+        $areas = Cache::remember('areas', Carbon::now()->addMinutes(30), function () {
+            return Area::get();
+        });
+        return view('configurations.areas.index', ['areas' => $areas]);
     }
 
     public function create()
     {
-        return view('locations.areas.create');
+        return view('configurations.areas.create');
     }
 
     public function store(Request $request)
@@ -34,14 +38,14 @@ class AreaController extends Controller
 
         Area::create($data);
 
-        return redirect('/locations/areas')->with('status', 'Area created successfully');
+        return redirect()->back()->with('status', 'Area created successfully');
     }
 
     public function edit($areaId)
     {
         $area = Area::findOrFail($areaId);
 
-        return view('locations.areas.edit', [
+        return view('configurations.areas.edit', [
             'area' => $area,
         ]);
     }
@@ -72,7 +76,7 @@ class AreaController extends Controller
 
         $area->update($data);
 
-        return redirect('/locations/areas')->with('status', 'Area Updated Successfully');
+        return redirect()->back()->with('status', 'Area Updated Successfully');
     }
 
     public function destroy($areaId)
@@ -80,6 +84,6 @@ class AreaController extends Controller
         $area = Area::findOrFail($areaId);
         $area->delete();
 
-        return redirect('/locations/areas')->with('status', 'Area Delete Successfully');
+        return redirect('/configurations/areas')->with('status', 'Area Delete Successfully');
     }
 }

@@ -2,6 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Area;
+use App\Models\Group;
+use App\Models\Position;
+use App\Models\Task;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
@@ -31,6 +35,18 @@ class UserRolePermissionSeeder extends Seeder
         Permission::create(['name' => 'update user']);
         Permission::create(['name' => 'delete user']);
 
+        Area::create(['ten' => 'Area 1', 'ma' => 'area-1', 'mota' => 'This is area 1']);
+        Area::create(['ten' => 'Area 2', 'ma' => 'area-2', 'mota' => 'This is area 2']);
+
+        Position::create(['ten' => 'Position 1', 'ma' => 'position-1', 'mota' => 'This is position 1']);
+        Position::create(['ten' => 'position 2', 'ma' => 'position-2', 'mota' => 'This is position 2']);
+
+        Group::create(['ten' => 'Corner', 'loainhom' => 'khuvuc']);
+        Group::create(['ten' => 'Construct', 'loainhom' => 'khuvuc']);
+        Group::create(['ten' => 'Detection', 'loainhom' => 'chucnang']);
+
+        Task::create(['ten' => 'Crossing Line', 'cauhinh' => ['Optimizer' => 'AdamW', 'Learning Rate' => '0.001']]);
+        Task::create(['ten' => 'Counting', 'cauhinh' => ['Optimizer' => 'AdamW', 'Learning Rate' => '0.01']]);
 
         // Create Roles
         $superAdminRole = Role::create(['name' => 'super-admin']); //as super-admin

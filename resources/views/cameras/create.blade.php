@@ -3,8 +3,11 @@
 @section('content')
     <div class="h-[80%]">
         <div class="h-full">
-            <div class="w-full h-[400px] mb-3">
-                <img src="images/test-detect.png" alt="" class="w-full max-h-full object-cover">
+            <div class="w-full h-[400px] mb-3 bg-gray-200 flex items-center justify-center">
+                <svg class="h-12 w-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
             </div>
 
             @if ($errors->any())
@@ -16,147 +19,25 @@
             @endif
 
             <div>
-                <h4>Configuration</h4>
-                <form action="{{ url('cameras') }}" method="POST">
+                <form action="{{ route('cameras.store') }}" method="POST">
 
                     @csrf
 
                     <div class="grid grid-cols-12 gap-3">
+                        {{-- Task --}}
                         <div class="col-span-3">
                             <h5>Vision task</h5>
-                            <div class="flex flex-col justify-between">
-                                <div>
-                                    <label for="taskId" class="form-label">Task</label>
-                                    <select class="form-select" id="taskId" name="taskId">
-                                        <option selected disabled value="">Choose...</option>
-                                        {{-- @foreach ($tasks as $task)
-                                            <option value="{{ $task->id }}">{{ $task->name }}</option>
-                                        @endforeach --}}
-                                    </select>
-                                    <div class="invalid-feedback">
-                                        Please select a valid task.
-                                    </div>
-                                </div>
-                                <div class="mt-3">
-                                    <label for="taskName" class="form-label">Task name</label>
-                                    <input type="text" class="form-control" id="taskName" name="taskName" value=""
-                                        placeholder="Following route 1">
-                                    <div class="valid-feedback">
-                                        Looks good!
-                                    </div>
-                                </div>
-                                <div class="mt-3">
-                                    <select class="js-example-basic-single" name="state">
-                                        <option value="AL">Alabama</option>
-                                        ...
-                                        <option value="WY">Wyoming</option>
-                                    </select>
-                                </div>
-
-                            </div>
+                            @include('cameras.partials.create.task')
                         </div>
+
+                        {{-- Metadata --}}
                         <div class="col-span-9">
                             <h5>Metadata</h5>
-                            <div class="grid grid-cols-12 gap-3">
-                                <div class="col-span-4">
-                                    <label for="name" class="form-label">Name</label>
-                                    <input type="text" class="form-control" id="name" name="name" value=""
-                                        placeholder="MKK052 Pano 7000" required>
-                                    <div class="valid-feedback">
-                                        Looks good!
-                                    </div>
-                                </div>
-
-                                <div class="col-span-4">
-                                    <label for="location" class="form-label">Location</label>
-                                    <x-hierarchical-select :areas="$areas" />
-                                </div>
-
-                                <div class="col-span-4">
-                                    <label for="path" class="form-label">Path</label>
-                                    <input type="text" class="form-control" id="path" name="path" value=""
-                                        placeholder="The end part of URL" required>
-                                    <div class="valid-feedback">
-                                        Looks good!
-                                    </div>
-                                </div>
-                                <div class="col-span-4">
-                                    <label for="ipAddress" class="form-label">Ip address</label>
-                                    <input type="text" class="form-control" id="ipAddress" name="ipAddress"
-                                        value="" placeholder="192.168.8.191" required>
-                                    <div class="valid-feedback">
-                                        Looks good!
-                                    </div>
-                                </div>
-                                <div class="col-span-4">
-                                    <label for="port" class="form-label">Port</label>
-                                    <input type="text" class="form-control" id="port" name="port" value=""
-                                        placeholder="554" required>
-                                    <div class="valid-feedback">
-                                        Looks good!
-                                    </div>
-                                </div>
-                                <div class="col-span-4">
-                                    <label for="username" class="form-label">Username</label>
-                                    <input type="text" class="form-control" id="username" name="username" value=""
-                                        placeholder="admin" required>
-                                    <div class="valid-feedback">
-                                        Looks good!
-                                    </div>
-                                </div>
-                                <div class="col-span-4">
-                                    <label for="password" class="form-label">Password</label>
-                                    <input type="password" class="form-control" id="password" name="password"
-                                        value="" required>
-                                    <div class="valid-feedback">
-                                        Looks good!
-                                    </div>
-                                </div>
-                                <div class="col-span-4">
-                                    <label for="groupId" class="form-label">Group</label>
-                                    <select name="groupId" class="form-control" aria-label="Default select example">
-                                        <option value="">Select camera group</option>
-                                        <option disabled class="text-gray-400">Area Group</option>
-                                        @foreach ($groups as $group)
-                                            @if ($group->loainhom == 'chucnang')
-                                                @continue
-                                            @endif
-                                            <option value="{{ $group->id }}">
-                                                {{ $group->ten }}
-                                            </option>
-                                        @endforeach
-                                        <hr>
-                                        <option disabled class="text-gray-400">Function Group</option>
-                                        @foreach ($groups as $group)
-                                            @if ($group->loainhom == 'khuvuc')
-                                                @continue
-                                            @endif
-                                            <option class="!pl-[10px]" value="{{ $group->id }}">{{ $group->ten }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    <div class="invalid-feedback">
-                                        Please select a valid group.
-                                    </div>
-                                </div>
-                                <div class="col-span-4">
-                                    <label for="status" class="form-label">Status</label>
-                                    <select class="form-select" id="status" name="status" required>
-                                        <option selected disabled value="">Choose...</option>
-                                        <option value="hoatdong">Run</option>
-                                        <option value="ngunghoatdong">Stop</option>
-                                        <option value="dacauhinh">Active</option>
-                                        <option value="chuacauhinh">Inactive</option>
-                                    </select>
-                                    <div class="invalid-feedback">
-                                        Please select a valid status.
-                                    </div>
-                                </div>
-                            </div>
+                            @include('cameras.partials.create.metadata')
                         </div>
                     </div>
 
-                    <div class="col-md mt-3">
+                    <div class="col-md mt-3 w-full flex items-end justify-end">
                         <button class="btn btn-primary" type="submit">Save</button>
                     </div>
                 </form>
@@ -166,9 +47,65 @@
 @endsection
 
 @section('script')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('.js-example-basic-single').select2();
+            $('.select2_search').select2({
+                placeholder: "Select an option",
+                allowClear: true
+            });
+
+            $('.select2_search').on('select2:select', function(e) {
+                updateParams();
+            });
+
+            function updateParams() {
+                const taskSelect = document.getElementById('taskId');
+                const parametersInput = document.getElementById('parameters');
+                const selectedOption = taskSelect.options[taskSelect.selectedIndex];
+                const cauhinhData = selectedOption.getAttribute('data-cauhinh');
+                console.log("Cấu hình Data:", cauhinhData);
+
+                let config;
+                try {
+                    config = JSON.parse(cauhinhData);
+                } catch (error) {
+                    console.error('Invalid JSON in data-cauhinh:', error);
+                    config = {};
+                }
+
+                const keyValueContainer = document.getElementById("keyValueContainer");
+                keyValueContainer.innerHTML = '';
+
+                for (const key in config) {
+                    if (config.hasOwnProperty(key)) {
+                        keyValueContainer.innerHTML += `
+                            <div class="parameter-group">
+                                <label class="form-label mt-3">${key}</label>
+                                <input class='form-control parameter-input' 
+                                       data-key="${key}"
+                                       value='${config[key] || ''}'
+                                       onchange="updateParametersValue()">
+                            </div>`;
+                    }
+                }
+
+                updateParametersValue();
+            }
+
+            function updateParametersValue() {
+                const parameters = {};
+                const parametersInput = document.getElementById('parameters');
+
+                document.querySelectorAll('.parameter-input').forEach(input => {
+                    const key = input.getAttribute('data-key');
+                    parameters[key] = input.value;
+                });
+
+                parametersInput.value = JSON.stringify(parameters);
+            }
+
+            window.updateParametersValue = updateParametersValue;
         });
     </script>
 @endsection
@@ -176,9 +113,7 @@
 @section('subHeader')
     <div class="flex items-center gap-4">
         <a class="no-underline text-[#6A6E76]" href="{{ url('/cameras') }}">General</a>
-        <a class="no-underline text-[#6A6E76]" href="{{ route('cameras.groups') }}">Group</a>
-        <a class="no-underline text-[#6A6E76]" href="{{ route('cameras.tasks') }}">Task</a>
-        <a class="no-underline text-[#6A6E76]" href="{{ url('/cameras/create') }}">Setting</a>
-        <a class="no-underline text-[#6A6E76]" href="#">Recording</a>
+        <a class="no-underline text-[#6A6E76]" href="{{ url('/cameras/create') }}">Add</a>
+        <a class="no-underline text-[#6A6E76]" href="{{ url('/cameras/edit') }}">Detail</a>
     </div>
 @endsection

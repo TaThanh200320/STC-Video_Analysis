@@ -2,7 +2,7 @@
 
 @section('content')
     <div>
-        <a href="{{ url('users/create') }}" class="btn btn-primary float-end">Add User</a>
+        <a href="{{ url('users/create') }}" class="btn btn-primary float-end mt-1">Add User</a>
     </div>
 
     <table id="datatable" class="table table-striped" style="width:100%">

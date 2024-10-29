@@ -4,20 +4,26 @@ namespace App\Http\Controllers;
 
 use App\Models\Area;
 use App\Models\Position;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class PositionController extends Controller
 {
     public function index()
     {
-        $positions = Position::with('area')->get();
-        return view('locations.positions.index', ['positions' => $positions]);
+        $positions = Cache::remember('positions', Carbon::now()->addMinutes(30), function () {
+            return Position::with('area')->get();
+        });
+        return view('configurations.positions.index', ['positions' => $positions]);
     }
 
     public function create()
     {
-        $areas = Area::select('ten', 'id')->get();
-        return view('locations.positions.create', ['areas' => $areas]);
+        $areas = Cache::remember('areas_posi', Carbon::now()->addMinutes(30), function () {
+            return Area::select('ten', 'id')->get();
+        });
+        return view('configurations.positions.create', ['areas' => $areas]);
     }
 
     public function store(Request $request)
@@ -34,15 +40,16 @@ class PositionController extends Controller
             'khuvucid' => $request->areaId,
         ]);
 
-        return redirect('/locations/positions')->with('status', 'Position created successfully');
+        return redirect()->back()->with('status', 'Position created successfully');
     }
 
     public function edit($positionId)
     {
         $position = Position::with('area')->findOrFail($positionId);
+
         $oldArea = $position->area;
         $areas = Area::get();
-        return view('locations.positions.edit', [
+        return view('configurations.positions.edit', [
             'position' => $position,
             'areas' => $areas,
             'oldArea' => $oldArea,
@@ -76,7 +83,7 @@ class PositionController extends Controller
 
         $position->update($data);
 
-        return redirect('/locations/positions')->with('status', 'Position Updated Successfully');
+        return redirect()->back()->with('status', 'Position Updated Successfully');
     }
 
     public function destroy($positionId)
@@ -84,6 +91,6 @@ class PositionController extends Controller
         $user = Position::findOrFail($positionId);
         $user->delete();
 
-        return redirect('/locations/positions')->with('status', 'Position Delete Successfully');
+        return redirect('/configurations/positions')->with('status', 'Position Delete Successfully');
     }
 }

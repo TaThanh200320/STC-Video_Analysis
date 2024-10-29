@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Cache;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Middleware\PermissionMiddleware;
 
 class RoleController extends Controller implements HasMiddleware
@@ -16,7 +17,7 @@ class RoleController extends Controller implements HasMiddleware
     {
         return [
             new Middleware(PermissionMiddleware::using('view role'), only: ['index']),
-            new Middleware(PermissionMiddleware::using('create role'), only: ['create', 'store', 'addPermissionToRole', 'givePermissionToRole']),
+            new Middleware(PermissionMiddleware::using('create role'), only: ['create', 'store']),
             new Middleware(PermissionMiddleware::using('update role'), only: ['edit', 'update']),
             new Middleware(PermissionMiddleware::using('delete role'), only: ['destroy']),
         ];
@@ -24,88 +25,61 @@ class RoleController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $roles = Role::get();
-        return view('roles.index', ['roles' => $roles]);
+
+        $roles = Cache::remember('roles', Carbon::now()->addMinutes(10), fn() => Role::all());
+        return view('roles.index', compact('roles'));
     }
 
     public function create()
     {
-        return view('roles.create');
+        $permissions = Cache::remember('permissions', Carbon::now()->addMinutes(10), fn() => Permission::all());
+        return view('roles.create', compact('permissions'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'unique:roles,name'
-            ]
+            'name' => 'required|string|unique:roles,name',
+            'permission' => 'array'
         ]);
 
-        Role::create([
+        $role = Role::create([
             'name' => $request->name
         ]);
 
-        return redirect('roles')->with('status', 'Role Created Successfully');
+        if ($request->has('permission')) {
+            $role->syncPermissions($request->permission);
+        }
+
+        return redirect()->back()->with('status', 'Role Created Successfully with Permissions');
     }
 
     public function edit(Role $role)
     {
-        return view('roles.edit', [
-            'role' => $role
-        ]);
+        $permissions = Cache::remember('permissions', Carbon::now()->addMinutes(10), fn() => Permission::all());
+        $rolePermissions = $role->permissions->pluck('id')->toArray();
+        return view('roles.edit', compact('role', 'permissions', 'rolePermissions'));
     }
 
     public function update(Request $request, Role $role)
     {
         $request->validate([
-            'name' => [
-                'required',
-                'string',
-                'unique:roles,name,' . $role->id
-            ]
+            'name' => 'required|string|max:255',
+            'permissions' => 'array',
+            'permissions.*' => 'exists:permissions,id',
         ]);
 
-        $role->update([
-            'name' => $request->name
-        ]);
+        $role->update(['name' => $request->name]);
+        $role->permissions()->sync($request->permissions);
 
-        return redirect('roles')->with('status', 'Role Updated Successfully');
+        return redirect()->back()->with('success', 'Role updated successfully.');
     }
 
     public function destroy($roleId)
     {
-        $role = Role::find($roleId);
+        $role = Role::findOrFail($roleId);
         $role->delete();
-        return redirect('roles')->with('status', 'Role Deleted Successfully');
-    }
 
-    public function addPermissionToRole($roleId)
-    {
-        $permissions = Permission::get();
-        $role = Role::findOrFail($roleId);
-        $rolePermissions = DB::table('role_has_permissions')
-            ->where('role_has_permissions.role_id', $role->id)
-            ->pluck('role_has_permissions.permission_id', 'role_has_permissions.permission_id')
-            ->all();
-
-        return view('roles.add-permissions', [
-            'role' => $role,
-            'permissions' => $permissions,
-            'rolePermissions' => $rolePermissions
-        ]);
-    }
-
-    public function givePermissionToRole(Request $request, $roleId)
-    {
-        $request->validate([
-            'permission' => 'required'
-        ]);
-
-        $role = Role::findOrFail($roleId);
-        $role->syncPermissions($request->permission);
-
-        return redirect()->back()->with('status', 'Permissions added to role');
+        return redirect('/roles')->with('status', 'Role Delete Successfully');
     }
 }

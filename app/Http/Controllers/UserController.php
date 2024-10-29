@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\Middleware;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Support\Facades\Cache;
 use Spatie\Permission\Middleware\PermissionMiddleware;
 
 
@@ -25,13 +27,18 @@ class UserController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $users = User::get();
+        $users = Cache::remember('users', Carbon::now()->addMinutes(30), function () {
+            return User::get();
+        });
         return view('users.index', ['users' => $users]);
     }
 
     public function create()
     {
-        $roles = Role::pluck('name', 'name')->all();
+        $roles = Cache::remember('roles_in_users', Carbon::now()->addMinutes(30), function ($areaId) {
+            return Role::pluck('name', 'name')->all();
+        });
+
         return view('users.create', ['roles' => $roles]);
     }
 
@@ -52,12 +59,15 @@ class UserController extends Controller implements HasMiddleware
 
         $user->syncRoles($request->roles);
 
-        return redirect('/users')->with('status', 'User created successfully with roles');
+        return redirect()->back()->with('status', 'User created successfully with roles');
     }
 
     public function edit(User $user)
     {
-        $roles = Role::pluck('name', 'name')->all();
+        $roles = Cache::remember('roles_in_users', Carbon::now()->addMinutes(30), function ($areaId) {
+            return Role::pluck('name', 'name')->all();
+        });
+
         $userRoles = $user->roles->pluck('name', 'name')->all();
         return view('users.edit', [
             'user' => $user,
@@ -88,7 +98,7 @@ class UserController extends Controller implements HasMiddleware
         $user->update($data);
         $user->syncRoles($request->roles);
 
-        return redirect('/users')->with('status', 'User Updated Successfully with roles');
+        return redirect()->back()->with('status', 'User Updated Successfully with roles');
     }
 
     public function destroy($userId)

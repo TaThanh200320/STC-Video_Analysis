@@ -8,47 +8,48 @@ use App\Http\Controllers\PositionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StreamingController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\WorkshopController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AuthController::class, 'login']);
+Route::prefix('cameras')->group(function () {
+    Route::get('/{id}/rtsp-url', [CameraController::class, 'getRtspUrl']);
+    Route::get('/active', [CameraController::class, 'getActiveCameras']);
+});
 
 Route::group(['middleware' => ['role:super-admin|admin|editor']], function () {
     Route::resource('roles', RoleController::class);
     Route::get('roles/{roleId}/delete', [RoleController::class, 'destroy']);
-    Route::get('roles/{roleId}/give-permissions', [RoleController::class, 'addPermissionToRole']);
-    Route::put('roles/{roleId}/give-permissions', [RoleController::class, 'givePermissionToRole']);
 
     Route::resource('users', UserController::class);
     Route::get('users/{userId}/delete', [UserController::class, 'destroy']);
 
-    Route::get('locations/areas', [AreaController::class, 'index'])->name('locations.areas');
-    Route::get('locations/areas/create', [AreaController::class, 'create'])->name('locations.areas.create');
-    Route::post('locations/areas/store', [AreaController::class, 'store'])->name('locations.areas.store');
-    Route::get('locations/areas/{areaId}/edit', [AreaController::class, 'edit'])->name('locations.areas.edit');
-    Route::put('locations/areas/{areaId}', [AreaController::class, 'update'])->name('locations.areas.update');
-    Route::get('locations/areas/{areaId}/delete', [AreaController::class, 'destroy']);
+    Route::get('configurations/areas', [AreaController::class, 'index'])->name('configurations.areas');
+    Route::get('configurations/areas/create', [AreaController::class, 'create'])->name('configurations.areas.create');
+    Route::post('configurations/areas/store', [AreaController::class, 'store'])->name('configurations.areas.store');
+    Route::get('configurations/areas/{areaId}/edit', [AreaController::class, 'edit'])->name('configurations.areas.edit');
+    Route::put('configurations/areas/{areaId}', [AreaController::class, 'update'])->name('configurations.areas.update');
+    Route::get('configurations/areas/{areaId}/delete', [AreaController::class, 'destroy']);
 
-    Route::get('locations/positions', [PositionController::class, 'index'])->name('locations.positions');
-    Route::get('locations/positions/create', [PositionController::class, 'create'])->name('locations.positions.create');
-    Route::post('locations/positions/store', [PositionController::class, 'store'])->name('locations.positions.store');
-    Route::get('locations/positions/{positionId}/edit', [PositionController::class, 'edit'])->name('locations.positions.edit');
-    Route::put('locations/positions/{positionId}', [PositionController::class, 'update'])->name('locations.positions.update');
-    Route::get('locations/positions/{areaId}/delete', [PositionController::class, 'destroy']);
+    Route::get('configurations/positions', [PositionController::class, 'index'])->name('configurations.positions');
+    Route::get('configurations/positions/create', [PositionController::class, 'create'])->name('configurations.positions.create');
+    Route::post('configurations/positions/store', [PositionController::class, 'store'])->name('configurations.positions.store');
+    Route::get('configurations/positions/{positionId}/edit', [PositionController::class, 'edit'])->name('configurations.positions.edit');
+    Route::put('configurations/positions/{positionId}', [PositionController::class, 'update'])->name('configurations.positions.update');
+    Route::get('configurations/positions/{areaId}/delete', [PositionController::class, 'destroy']);
 
-    Route::get('cameras/groups', [GroupController::class, 'index'])->name('cameras.groups');
-    Route::get('cameras/groups/create', [GroupController::class, 'create'])->name('cameras.groups.create');
-    Route::post('cameras/groups/store', [GroupController::class, 'store'])->name('cameras.groups.store');
-    Route::get('cameras/groups/{areaId}/edit', [GroupController::class, 'edit'])->name('cameras.groups.edit');
-    Route::put('cameras/groups/{areaId}', [GroupController::class, 'update'])->name('cameras.groups.update');
-    Route::get('cameras/groups/{areaId}/delete', [GroupController::class, 'destroy']);
+    Route::get('configurations/groups', [GroupController::class, 'index'])->name('configurations.groups');
+    Route::get('configurations/groups/create', [GroupController::class, 'create'])->name('configurations.groups.create');
+    Route::post('configurations/groups/store', [GroupController::class, 'store'])->name('configurations.groups.store');
+    Route::get('configurations/groups/{areaId}/edit', [GroupController::class, 'edit'])->name('configurations.groups.edit');
+    Route::put('configurations/groups/{areaId}', [GroupController::class, 'update'])->name('configurations.groups.update');
+    Route::get('configurations/groups/{areaId}/delete', [GroupController::class, 'destroy']);
 
-    Route::get('cameras/tasks', [GroupController::class, 'index'])->name('cameras.tasks');
-    Route::get('cameras/tasks/create', [GroupController::class, 'create'])->name('cameras.tasks.create');
-    Route::post('cameras/tasks/store', [GroupController::class, 'store'])->name('cameras.tasks.store');
-    Route::get('cameras/tasks/{areaId}/edit', [GroupController::class, 'edit'])->name('cameras.tasks.edit');
-    Route::put('cameras/tasks/{areaId}', [GroupController::class, 'update'])->name('cameras.tasks.update');
-    Route::get('cameras/tasks/{areaId}/delete', [GroupController::class, 'destroy']);
+    Route::get('cameras', [CameraController::class, 'index'])->name('cameras');
+    Route::get('cameras/create', [CameraController::class, 'create'])->name('cameras.create');
+    Route::post('cameras/store', [CameraController::class, 'store'])->name('cameras.store');
+    Route::get('cameras/{cameraId}/edit', [CameraController::class, 'edit'])->name('cameras.edit');
+    Route::put('cameras/{cameraId}', [CameraController::class, 'update'])->name('cameras.update');
+    Route::get('cameras/{cameraId}/delete', [CameraController::class, 'destroy']);
 });
 
 Route::middleware([
@@ -56,9 +57,6 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::resource('cameras', CameraController::class);
-    Route::get('/cameras', [CameraController::class, 'index'])->name('camera.show');
-
     Route::get('/dashboard', [StreamingController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/stream/{cameraId}', [StreamingController::class, 'stream']);
 

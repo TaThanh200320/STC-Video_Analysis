@@ -3,19 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class GroupController extends Controller
 {
     public function index()
     {
-        $groups = Group::get();
-        return view('cameras.groups.index', ['groups' => $groups]);
+        $groups = Cache::remember('groups', Carbon::now()->addMinutes(30), function () {
+            return Group::get();
+        });
+        return view('configurations.groups.index', ['groups' => $groups]);
     }
 
     public function create()
     {
-        return view('cameras.groups.create');
+        return view('configurations.groups.create');
     }
 
     public function store(Request $request)
@@ -34,14 +38,14 @@ class GroupController extends Controller
 
         Group::create($data);
 
-        return redirect('/cameras/groups')->with('status', 'Group created successfully');
+        return redirect()->back()->with('status', 'Group created successfully');
     }
 
     public function edit($groupId)
     {
         $group = Group::findOrFail($groupId);
 
-        return view('cameras.groups.edit', [
+        return view('configurations.groups.edit', [
             'group' => $group,
         ]);
     }
@@ -62,7 +66,7 @@ class GroupController extends Controller
 
         $group->update($data);
 
-        return redirect('/cameras/groups')->with('status', 'Group Updated Successfully');
+        return redirect()->back()->with('status', 'Group Updated Successfully');
     }
 
     public function destroy($groupId)
@@ -70,6 +74,6 @@ class GroupController extends Controller
         $group = Group::findOrFail($groupId);
         $group->delete();
 
-        return redirect('/cameras/groups')->with('status', 'Group Delete Successfully');
+        return redirect('/configurations/groups')->with('status', 'Group Delete Successfully');
     }
 }

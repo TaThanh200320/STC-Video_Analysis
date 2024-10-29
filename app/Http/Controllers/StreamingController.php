@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Camera;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 class StreamingController extends Controller
 {
     public function index()
     {
-        // Lấy danh sách camera từ cơ sở dữ liệu hoặc cấu hình
-        $cameras = [
-            ['id' => 1, 'name' => 'Camera 1', 'url' => 'rtsp://admin:Admin123456*@@192.168.8.191:554/Streaming/channels/101'],
-            ['id' => 2, 'name' => 'Camera 2', 'url' => 'rtsp://admin:Admin123456*@@192.168.8.193:554/Streaming/channels/101'],
-            ['id' => 3, 'name' => 'Camera 3', 'url' => 'rtsp://admin:Stc@vielina.com@192.168.8.192:554/cam/realmonitor?channel=1&subtype=0'],
-        ];
+        $cameras = Cache::remember('streaming', Carbon::now()->addMinutes(30), function () {
+            return Camera::select('ten', 'id')->get();
+        });
 
         return view('dashboard', compact('cameras'));
     }
@@ -37,12 +37,7 @@ class StreamingController extends Controller
 
     private function getCameraById($id)
     {
-        // Giả lập lấy thông tin camera, trong thực tế bạn sẽ truy vấn từ cơ sở dữ liệu
-        $cameras = [
-            1 => ['id' => 1, 'name' => 'Camera 1', 'url' => 'rtsp://admin:Admin123456*@@192.168.8.191:554/Streaming/channels/101'],
-            2 => ['id' => 2, 'name' => 'Camera 2', 'url' => 'rtsp://admin:Admin123456*@@192.168.8.193:554/Streaming/channels/101'],
-            3 => ['id' => 3, 'name' => 'Camera 3', 'url' => 'rtsp://admin:Stc@vielina.com@192.168.8.192:554/cam/realmonitor?channel=1&subtype=0'],
-        ];
+        $cameras = Camera::findOrFail($id)->select('ten', 'id');
 
         return $cameras[$id] ?? null;
     }

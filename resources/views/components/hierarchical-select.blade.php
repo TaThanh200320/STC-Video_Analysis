@@ -1,5 +1,4 @@
-{{-- resources/views/components/tree-select.blade.php --}}
-@props(['name' => 'location', 'areas'])
+@props(['name' => 'locationId', 'areas'])
 
 <div x-data="{
     isOpen: false,
