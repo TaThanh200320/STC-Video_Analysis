@@ -51,7 +51,7 @@ class RoleController extends Controller implements HasMiddleware
             $role->syncPermissions($request->permission);
         }
 
-        return redirect()->back()->with('status', 'Role Created Successfully with Permissions');
+        return redirect(url('/roles'))->with('status', 'Role Created Successfully with Permissions');
     }
 
     public function edit(Role $role)
@@ -72,7 +72,7 @@ class RoleController extends Controller implements HasMiddleware
         $role->update(['name' => $request->name]);
         $role->permissions()->sync($request->permissions);
 
-        return redirect()->back()->with('success', 'Role updated successfully.');
+        return redirect(url('/roles'))->with('success', 'Role updated successfully.');
     }
 
     public function destroy($roleId)

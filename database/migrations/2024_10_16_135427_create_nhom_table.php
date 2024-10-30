@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string(column: 'ten');
             $table->string('mota')->nullable();
-            $table->enum('loainhom', ['khuvuc', 'chucnang']);
             $table->timestamps();
         });
     }

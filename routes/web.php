@@ -3,6 +3,7 @@
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CameraController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\RoleController;
@@ -50,6 +51,7 @@ Route::group(['middleware' => ['role:super-admin|admin|editor']], function () {
     Route::get('cameras/{cameraId}/edit', [CameraController::class, 'edit'])->name('cameras.edit');
     Route::put('cameras/{cameraId}', [CameraController::class, 'update'])->name('cameras.update');
     Route::get('cameras/{cameraId}/delete', [CameraController::class, 'destroy']);
+    Route::get('cameras/detail', [CameraController::class, 'detail'])->name('cameras.detail');
 });
 
 Route::middleware([
@@ -57,8 +59,10 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', [StreamingController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard/stream/{cameraId}', [StreamingController::class, 'stream']);
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/stream/{cameraId}', [DashboardController::class, 'stream']);
+    Route::put('/dashboard/update-layout', [DashboardController::class, 'updateLayout'])->name('dashboard.update-layout');
+
 
     Route::get('/user/profile', function () {
         return view('profile.show');

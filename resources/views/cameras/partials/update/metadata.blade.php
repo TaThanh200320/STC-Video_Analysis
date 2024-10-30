@@ -8,6 +8,14 @@
         </div>
     </div>
     <div class="col-span-4">
+        <label for="path" class="form-label">Path</label>
+        <input type="text" class="form-control" id="path" name="path" value="{{ $camera->duongdan }}"
+            placeholder="The end part of URL">
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+    </div>
+    <div class="col-span-4">
         <label for="locationId" class="form-label">Location</label>
         <select class="select2_search form-control" name="locationId">
             @foreach ($areas as $area)
@@ -22,14 +30,6 @@
                 </optgroup>
             @endforeach
         </select>
-    </div>
-    <div class="col-span-4">
-        <label for="path" class="form-label">Path</label>
-        <input type="text" class="form-control" id="path" name="path" value="{{ $camera->duongdan }}"
-            placeholder="The end part of URL">
-        <div class="valid-feedback">
-            Looks good!
-        </div>
     </div>
     <div class="col-span-4">
         <label for="ipAddress" class="form-label">Ip address</label>
@@ -48,6 +48,21 @@
         </div>
     </div>
     <div class="col-span-4">
+        <label for="groupId" class="form-label">Group</label>
+        <select class="select2_search form-control" name="groupId">
+            @foreach ($groups as $group)
+                @if ($camera->group->id == $group->id)
+                    <option selected value="{{ $camera->group->id }}">{{ $camera->group->ten }}</option>
+                @else
+                    <option value="{{ $group->id }}">{{ $group->ten }}</option>
+                @endif
+            @endforeach
+        </select>
+        <div class="invalid-feedback">
+            Please select a valid group.
+        </div>
+    </div>
+    <div class="col-span-4">
         <label for="username" class="form-label">Username</label>
         <input type="text" class="form-control" id="username" name="username" value="{{ $camera->tendangnhap }}"
             placeholder="admin">
@@ -63,42 +78,12 @@
         </div>
     </div>
     <div class="col-span-4">
-        <label for="groupId" class="form-label">Group</label>
-        <select class="select2_search form-control" name="groupId">
-            <optgroup label="Area Group">
-                @foreach ($groups as $group)
-                    @if ($group->loainhom == 'khuvuc')
-                        @if ($camera->group->id == $group->id)
-                            <option selected value="{{ $camera->group->id }}">{{ $camera->group->ten }}</option>
-                        @else
-                            <option value="{{ $group->id }}">{{ $group->ten }}</option>
-                        @endif
-                    @endif
-                @endforeach
-            </optgroup>
-            <optgroup label="Function Group">
-                @foreach ($groups as $group)
-                    @if ($group->loainhom == 'chucnang')
-                        @if ($camera->group->id == $group->id)
-                            <option selected value="{{ $camera->group->id }}">{{ $camera->group->ten }}</option>
-                        @else
-                            <option value="{{ $group->id }}">{{ $group->ten }}</option>
-                        @endif
-                    @endif
-                @endforeach
-            </optgroup>
-        </select>
-        <div class="invalid-feedback">
-            Please select a valid group.
-        </div>
-    </div>
-    <div class="col-span-4">
         <label for="status" class="form-label">Status</label>
         <select class="select2_search form-control" name="status">
-            <option value="hoatdong" {{ $camera->trangthai == 'hoatdong' ? 'selected' : '' }}>Run</option>
-            <option value="ngunghoatdong" {{ $camera->trangthai == 'ngunghoatdong' ? 'selected' : '' }}>Stop</option>
-            <option value="dacauhinh" {{ $camera->trangthai == 'dacauhinh' ? 'selected' : '' }}>Active</option>
-            <option value="chuacauhinh" {{ $camera->trangthai == 'chuacauhinh' ? 'selected' : '' }}>Inactive</option>
+            <option value="0" {{ $camera->trangthai == 0 ? 'selected' : '' }}>Stop</option>
+            <option value="1" {{ $camera->trangthai == 1 ? 'selected' : '' }}>Run</option>
+            <option value="2" {{ $camera->trangthai == 2 ? 'selected' : '' }}>Inactive</option>
+            <option value="3" {{ $camera->trangthai == 2 ? 'selected' : '' }}>Active</option>
         </select>
         <div class="invalid-feedback">
             Please select a valid status.

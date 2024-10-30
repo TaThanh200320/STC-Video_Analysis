@@ -18,6 +18,7 @@
     <div class="col-span-4">
         <label for="locationId" class="form-label">Location</label>
         <select class="select2_search form-control" name="locationId">
+            <option value="" selected disabled></option>
             @foreach ($areas as $area)
                 <optgroup label="{{ $area->ten }}">
                     @foreach ($area->positions as $position)
@@ -44,6 +45,18 @@
         </div>
     </div>
     <div class="col-span-4">
+        <label for="groupId" class="form-label">Group</label>
+        <select class="select2_search form-control" name="groupId">
+            <option value="" selected disabled></option>
+            @foreach ($groups as $group)
+                <option value="{{ $group->id }}">{{ $group->ten }}</option>
+            @endforeach
+        </select>
+        <div class="invalid-feedback">
+            Please select a valid group.
+        </div>
+    </div>
+    <div class="col-span-4">
         <label for="username" class="form-label">Username</label>
         <input type="text" class="form-control" id="username" name="username" value="" placeholder="admin"
             required>
@@ -59,34 +72,13 @@
         </div>
     </div>
     <div class="col-span-4">
-        <label for="groupId" class="form-label">Group</label>
-        <select class="select2_search form-control" name="groupId">
-            <optgroup label="Area Group">
-                @foreach ($groups as $group)
-                    @if ($group->loainhom == 'khuvuc')
-                        <option value="{{ $group->id }}">{{ $group->ten }}</option>
-                    @endif
-                @endforeach
-            </optgroup>
-            <optgroup label="Function Group">
-                @foreach ($groups as $group)
-                    @if ($group->loainhom == 'chucnang')
-                        <option value="{{ $group->id }}">{{ $group->ten }}</option>
-                    @endif
-                @endforeach
-            </optgroup>
-        </select>
-        <div class="invalid-feedback">
-            Please select a valid group.
-        </div>
-    </div>
-    <div class="col-span-4">
         <label for="status" class="form-label">Status</label>
         <select class="select2_search form-control" name="status">
-            <option value="hoatdong">Run</option>
-            <option value="ngunghoatdong">Stop</option>
-            <option value="dacauhinh">Active</option>
-            <option value="chuacauhinh">Inactive</option>
+            <option value="" selected disabled></option>
+            <option value="0">Stop</option>
+            <option value="1">Run</option>
+            <option value="2">Inactive</option>
+            <option value="3">Active</option>
         </select>
         <div class="invalid-feedback">
             Please select a valid status.

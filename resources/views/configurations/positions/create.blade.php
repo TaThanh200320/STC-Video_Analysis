@@ -37,8 +37,8 @@
                             </div>
                             <div class="mb-3">
                                 <label for="">Areas</label>
-                                <select name="areaId" class="form-control" aria-label="Default select example">
-                                    <option value="">Select the area</option>
+                                <select class="select2_search form-control" name="areaId">
+                                    <option value="" selected disabled></option>
                                     @foreach ($areas as $area)
                                         <option value="{{ $area->id }}">{{ $area->ten }}</option>
                                     @endforeach
@@ -62,4 +62,16 @@
         <a class="no-underline text-[#6A6E76]" href="{{ route('configurations.groups') }}">Group</a>
 
     </div>
+@endsection
+
+@section('script')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2_search').select2({
+                placeholder: "Select an option",
+                allowClear: true
+            });
+        })
+    </script>
 @endsection

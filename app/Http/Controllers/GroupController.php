@@ -38,7 +38,7 @@ class GroupController extends Controller
 
         Group::create($data);
 
-        return redirect()->back()->with('status', 'Group created successfully');
+        return redirect(route('configurations.groups'))->with('status', 'Group created successfully');
     }
 
     public function edit($groupId)
@@ -66,7 +66,7 @@ class GroupController extends Controller
 
         $group->update($data);
 
-        return redirect()->back()->with('status', 'Group Updated Successfully');
+        return redirect(route('configurations.groups'))->with('status', 'Group Updated Successfully');
     }
 
     public function destroy($groupId)

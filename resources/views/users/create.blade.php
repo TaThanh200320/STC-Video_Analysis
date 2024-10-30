@@ -36,9 +36,17 @@
                                 <input type="text" name="password" class="form-control" required />
                             </div>
                             <div class="mb-3">
-                                <label for="">Roles</label>
-                                <select name="roles" class="form-control" aria-label="Default select example">
-                                    <option value="">Select role</option>
+                                <label for="status">Status</label>
+                                <select class="select2_search form-control" name="status">
+                                    <option value="" selected disabled></option>
+                                    <option value="0">Inactive</option>
+                                    <option value="1">Active</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="roles">Roles</label>
+                                <select class="select2_search form-control" name="roles">
+                                    <option value="" selected disabled></option>
                                     @foreach ($roles as $role)
                                         <option value="{{ $role }}">{{ $role }}</option>
                                     @endforeach
@@ -53,4 +61,16 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('script')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2_search').select2({
+                placeholder: "Select an option",
+                allowClear: true
+            });
+        })
+    </script>
 @endsection

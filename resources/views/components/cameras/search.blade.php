@@ -17,6 +17,12 @@
             <option value="{{ $group->id }}">{{ $group->ten }}</option>
         @endforeach
     </select>
+    {{-- <select wire:model.live="groupId" class="select2_search form-select">
+        <option value="" disabled selected></option>
+        @foreach ($this->groups as $group)
+            <option value="{{ $group->id }}">{{ $group->ten }}</option>
+        @endforeach
+    </select> --}}
 </div>
 
 <!-- Position Filter -->

@@ -45,9 +45,15 @@
                                 @enderror
                             </div>
                             <div class="mb-3">
+                                <label for="status">Status</label>
+                                <select class="select2_search form-control" name="status">
+                                    <option value="0" {{ $user->status == 0 ? 'selected' : '' }}>Inactive</option>
+                                    <option value="1" {{ $user->status == 1 ? 'selected' : '' }}>Active</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
                                 <label for="">Roles</label>
-                                <select name="roles" class="form-control">
-                                    <option value="">Select Role</option>
+                                <select class="select2_search form-control" name="roles">
                                     @foreach ($roles as $role)
                                         <option value="{{ $role }}"
                                             {{ in_array($role, $userRoles) ? 'selected' : '' }}>
@@ -68,4 +74,16 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('script')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2_search').select2({
+                placeholder: "Select an option",
+                allowClear: true
+            });
+        })
+    </script>
 @endsection

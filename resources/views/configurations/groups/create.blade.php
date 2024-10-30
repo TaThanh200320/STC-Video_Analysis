@@ -32,17 +32,6 @@
                                 <input type="text" name="description" class="form-control" />
                             </div>
                             <div class="mb-3">
-                                <label for="type" class="mb-1">Type</label>
-                                <select required name="type" class="form-control" aria-label="Default select example">
-                                    <option value="">Select group type</option>
-                                    <option value="khuvuc">Area</option>
-                                    <option value="chucnang">Function</option>
-                                </select>
-                                <div class="invalid-feedback">
-                                    Please select a valid group.
-                                </div>
-                            </div>
-                            <div class="mb-3">
                                 <button type="submit" class="btn btn-primary">Save</button>
                             </div>
                         </form>
@@ -58,6 +47,17 @@
         <a class="no-underline text-[#6A6E76]" href="{{ route('configurations.areas') }}">Areas</a>
         <a class="no-underline text-[#6A6E76]" href="{{ route('configurations.positions') }}">Positions</a>
         <a class="no-underline text-[#6A6E76]" href="{{ route('configurations.groups') }}">Group</a>
-
     </div>
+@endsection
+
+@section('script')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.select2_search').select2({
+                placeholder: "Select an option",
+                allowClear: true
+            });
+        })
+    </script>
 @endsection

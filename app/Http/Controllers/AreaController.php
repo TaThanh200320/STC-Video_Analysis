@@ -38,7 +38,7 @@ class AreaController extends Controller
 
         Area::create($data);
 
-        return redirect()->back()->with('status', 'Area created successfully');
+        return redirect(route('configurations.areas'))->with('status', 'Area created successfully');
     }
 
     public function edit($areaId)
@@ -76,7 +76,7 @@ class AreaController extends Controller
 
         $area->update($data);
 
-        return redirect()->back()->with('status', 'Area Updated Successfully');
+        return redirect(route('configurations.areas'))->with('status', 'Area Updated Successfully');
     }
 
     public function destroy($areaId)

@@ -30,6 +30,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'status',
+        'camera_layout'
     ];
 
     /**

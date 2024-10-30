@@ -18,6 +18,7 @@ class CameraController extends Controller
         $cameras = Cache::remember('cameras_index', Carbon::now()->addMinutes(30), function () {
             return Camera::select('ten', 'id')->get();
         });
+
         return view('cameras.index', compact('cameras'));
     }
 
@@ -50,7 +51,7 @@ class CameraController extends Controller
             'username' => 'required|string|max:255',
             'password' => 'required|string|max:255',
             'groupId' => 'nullable|exists:nhom,id',
-            'status' => 'required|in:hoatdong,ngunghoatdong,dacauhinh,chuacauhinh',
+            'status' => 'required|in:0,1,2,3',
         ]);
 
         $cameraData = [
@@ -74,7 +75,7 @@ class CameraController extends Controller
             ]);
         }
 
-        return redirect()->back()->with('status', 'Camera Created Successfully');
+        return redirect(route('cameras'))->with('status', 'Camera Created Successfully');
     }
 
     public function edit($cameraId)
@@ -107,7 +108,7 @@ class CameraController extends Controller
             'username' => 'nullable|string|max:255',
             'password' => 'nullable|string|max:255',
             'groupId' => 'nullable|exists:nhom,id',
-            'status' => 'nullable|in:hoatdong,ngunghoatdong,dacauhinh,chuacauhinh',
+            'status' => 'nullable|in:0,1,2,3',
         ]);
 
         $cameraData = [
@@ -128,7 +129,28 @@ class CameraController extends Controller
         }
 
         $camera->update($cameraData);
-        return redirect()->back()->with('status', 'Camera Updated Successfully');
+        return redirect(route('cameras'))->with('status', 'Camera Updated Successfully');
+    }
+
+    public function detail()
+    {
+        $areas = Cache::remember('areas_in_cameras_detail', Carbon::now()->addMinutes(30), function () {
+            return Area::with(['positions'])->get();
+        });
+
+        $cameras = Cache::remember('cameras_details', Carbon::now()->addMinutes(30), function () {
+            return Camera::select('ten', 'id')->get();
+        });
+
+        return view('cameras.detail', ['areas' => $areas]);
+    }
+
+    public function destroy($cameraId)
+    {
+        $camera = Camera::findOrFail($cameraId);
+        $camera->delete();
+
+        return redirect('/cameras')->with('status', 'Role Delete Successfully');
     }
 
     public function getRtspUrl($id)
@@ -147,14 +169,6 @@ class CameraController extends Controller
         return response()->json([
             'rtspUrl' => $url
         ]);
-    }
-
-    public function destroy($cameraId)
-    {
-        $camera = Camera::findOrFail($cameraId);
-        $camera->delete();
-
-        return redirect('/cameras')->with('status', 'Role Delete Successfully');
     }
 
     public function getActiveCameras()

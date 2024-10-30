@@ -40,7 +40,7 @@ class PositionController extends Controller
             'khuvucid' => $request->areaId,
         ]);
 
-        return redirect()->back()->with('status', 'Position created successfully');
+        return redirect(route('configurations.positions'))->with('status', 'Position created successfully');
     }
 
     public function edit($positionId)
@@ -83,7 +83,7 @@ class PositionController extends Controller
 
         $position->update($data);
 
-        return redirect()->back()->with('status', 'Position Updated Successfully');
+        return redirect(route('configurations.positions'))->with('status', 'Position Updated Successfully');
     }
 
     public function destroy($positionId)

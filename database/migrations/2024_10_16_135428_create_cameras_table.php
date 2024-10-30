@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('cong');
             $table->string('tendangnhap');
             $table->string('matkhau');
-            $table->enum('trangthai', ['hoatdong', 'ngunghoatdong', 'chuacauhinh', 'dacauhinh'])->default('chuacauhinh');
+            $table->enum('trangthai', ['0', '1', '2', '3'])->default('2');
             $table->foreignId('nhomid')
                 ->nullable()
                 ->constrained('nhom')
@@ -30,18 +30,6 @@ return new class extends Migration
                 ->nullOnDelete();
             $table->timestamps();
         });
-
-        Schema::create('nhomchucnang', function (Blueprint $table) {
-            $table->foreignId('nhomid')
-                ->nullable()
-                ->constrained('nhom')
-                ->cascadeOnDelete();
-            $table->foreignId('cameraid')
-                ->nullable()
-                ->constrained('cameras')
-                ->cascadeOnDelete();
-            $table->timestamps();
-        });
     }
 
     /**
@@ -50,6 +38,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('cameras');
-        Schema::dropIfExists('nhomchucnang');
     }
 };

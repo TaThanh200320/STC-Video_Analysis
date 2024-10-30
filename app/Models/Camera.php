@@ -28,11 +28,6 @@ class Camera extends Model
         return $this->belongsTo(Group::class, 'nhomid');
     }
 
-    public function aiGroups()
-    {
-        return $this->belongsToMany(Group::class, 'nhomchucnang');
-    }
-
     public function cameraTasks()
     {
         return $this->belongsToMany(Task::class, 'tacvucuacamera', 'cameraid', 'tacvuid')->withPivot('cauhinh');

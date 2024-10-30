@@ -35,7 +35,7 @@ class UserController extends Controller implements HasMiddleware
 
     public function create()
     {
-        $roles = Cache::remember('roles_in_users', Carbon::now()->addMinutes(30), function ($areaId) {
+        $roles = Cache::remember('roles_in_users', Carbon::now()->addMinutes(30), function () {
             return Role::pluck('name', 'name')->all();
         });
 
@@ -48,23 +48,25 @@ class UserController extends Controller implements HasMiddleware
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email',
             'password' => 'required|string|min:8|max:20',
+            'status' => 'required|in:0,1',
             'roles' => 'required'
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'status' => $request->status,
             'password' => Hash::make($request->password),
         ]);
 
         $user->syncRoles($request->roles);
 
-        return redirect()->back()->with('status', 'User created successfully with roles');
+        return redirect(url('/users'))->with('status', 'User created successfully with roles');
     }
 
     public function edit(User $user)
     {
-        $roles = Cache::remember('roles_in_users', Carbon::now()->addMinutes(30), function ($areaId) {
+        $roles = Cache::remember('roles_in_users', Carbon::now()->addMinutes(30), function () {
             return Role::pluck('name', 'name')->all();
         });
 
@@ -81,11 +83,13 @@ class UserController extends Controller implements HasMiddleware
         $request->validate([
             'name' => 'required|string|max:255',
             'password' => 'nullable|string|min:8|max:20',
+            'status' => 'required|in:0,1',
             'roles' => 'required'
         ]);
 
         $data = [
             'name' => $request->name,
+            'status' => $request->status,
             'email' => $request->email,
         ];
 
@@ -98,7 +102,7 @@ class UserController extends Controller implements HasMiddleware
         $user->update($data);
         $user->syncRoles($request->roles);
 
-        return redirect()->back()->with('status', 'User Updated Successfully with roles');
+        return redirect(url('/users'))->with('status', 'User Updated Successfully with roles');
     }
 
     public function destroy($userId)

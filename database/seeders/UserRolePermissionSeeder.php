@@ -41,9 +41,8 @@ class UserRolePermissionSeeder extends Seeder
         Position::create(['ten' => 'Position 1', 'ma' => 'position-1', 'mota' => 'This is position 1']);
         Position::create(['ten' => 'position 2', 'ma' => 'position-2', 'mota' => 'This is position 2']);
 
-        Group::create(['ten' => 'Corner', 'loainhom' => 'khuvuc']);
-        Group::create(['ten' => 'Construct', 'loainhom' => 'khuvuc']);
-        Group::create(['ten' => 'Detection', 'loainhom' => 'chucnang']);
+        Group::create(['ten' => 'Group 1', 'mota' => 'This is group 1']);
+        Group::create(['ten' => 'Group 2', 'mota' => 'This is group 2']);
 
         Task::create(['ten' => 'Crossing Line', 'cauhinh' => ['Optimizer' => 'AdamW', 'Learning Rate' => '0.001']]);
         Task::create(['ten' => 'Counting', 'cauhinh' => ['Optimizer' => 'AdamW', 'Learning Rate' => '0.01']]);
