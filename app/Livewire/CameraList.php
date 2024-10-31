@@ -9,6 +9,7 @@ use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -28,27 +29,28 @@ class CameraList extends Component
     #[Url()]
     public $sort = 'desc';
 
-    protected $queryString = [
-        'search' => ['except' => ''],
-        'groupId' => ['except' => ''],
-        'positionId' => ['except' => ''],
-        'taskId' => ['except' => ''],
-        'sort' => ['except' => 'desc'],
-        // 'page' => ['except' => 1],
-    ];
+    public $page = 1;
+
+    // protected $queryString = [
+    //     'search' => ['except' => ''],
+    //     'groupId' => ['except' => ''],
+    //     'positionId' => ['except' => ''],
+    //     'taskId' => ['except' => ''],
+    //     'sort' => ['except' => 'desc'],
+    //     'page' => ['except' => 1],
+    // ];
 
     public function setSort($sort)
     {
         $this->sort = ($sort === 'desc') ? 'desc' : 'asc';
     }
 
-    public function updating($name)
+    #[On('search')]
+    public function updateSearch($search)
     {
-        if ($name !== 'page') {
-            $this->resetPage();
-        }
+        $this->search = $search;
+        $this->resetPage();
     }
-
     public function clearFilters()
     {
         $this->reset(['search', 'groupId', 'positionId', 'taskId', 'sort']);
@@ -60,8 +62,7 @@ class CameraList extends Component
     {
         $cacheKey = 'cameras_' . $this->search . '_' . $this->groupId . '_' . $this->positionId . $this->taskId . $this->sort;
         return Cache::remember($cacheKey, Carbon::now()->addMinutes(30), function () {
-            return Camera::query()
-                ->published()
+            return Camera::published()
                 ->with(['group', 'position', 'cameraTasks'])
                 ->when($this->search, function ($query) {
                     $query->where('ten', 'like', '%' . $this->search . '%');
@@ -78,7 +79,7 @@ class CameraList extends Component
                     });
                 })
                 ->orderBy('created_at', $this->sort)
-                ->paginate(10);
+                ->paginate(6);
         });
     }
 

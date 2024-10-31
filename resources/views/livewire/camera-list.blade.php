@@ -21,7 +21,7 @@
 
             <!-- Pagination -->
             <div class="mt-6">
-                {{ $this->cameras->links() }}
+                {{ $this->cameras->onEachSide(1)->links() }}
             </div>
         </div>
     </div>

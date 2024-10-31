@@ -1,5 +1,4 @@
 @extends('layouts.app')
-
 @section('content')
     {{-- <div class="grid grid-cols-12 gap-3">
         @foreach ($cameras as $camera)
@@ -12,7 +11,7 @@
         <form id="layoutForm" action="{{ route('dashboard.update-layout') }}" method="POST" class="inline">
             @csrf
             @method('PUT')
-            <select name="layout" class="form-select" onchange="this.form.submit()">
+            <select name="layout" class="form-select mb-3" onchange="this.form.submit()">
                 <option value="4" {{ $layout == 4 ? 'selected' : '' }}>4 Cameras</option>
                 <option value="6" {{ $layout == 6 ? 'selected' : '' }}>6 Cameras</option>
                 <option value="8" {{ $layout == 8 ? 'selected' : '' }}>8 Cameras</option>
@@ -20,9 +19,7 @@
         </form>
     </div>
 
-    <div class="grid grid-cols-{{ $layout }}">
-        <div>{{ $layout }}</div>
-    </div>
+    @livewire('dashboard-camera-list')
 @endsection
 
 {{-- 
