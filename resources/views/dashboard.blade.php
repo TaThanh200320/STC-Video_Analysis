@@ -7,7 +7,7 @@
             </div>
         @endforeach
     </div> --}}
-    <div class="flex justify-end">
+    {{-- <div class="flex justify-end">
         <form id="layoutForm" action="{{ route('dashboard.update-layout') }}" method="POST" class="inline">
             @csrf
             @method('PUT')
@@ -17,12 +17,12 @@
                 <option value="8" {{ $layout == 8 ? 'selected' : '' }}>8 Cameras</option>
             </select>
         </form>
-    </div>
+    </div> --}}
 
     @livewire('dashboard-camera-list')
 @endsection
 
-{{-- 
+
 @section('script')
     <script>
         @foreach ($cameras as $camera)
@@ -32,4 +32,4 @@
             });
         @endforeach
     </script>
-@endsection --}}
+@endsection

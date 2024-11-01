@@ -34,3 +34,11 @@
 .select2-selection__arrow {
     margin-top: 3px;
 }
+
+.grid-stack-item-content {
+    background-color: white;
+}
+
+.grid-stack {
+    height: 70vh;
+}

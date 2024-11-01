@@ -5,9 +5,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CameraController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\LayoutController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\RoleController;
-use App\Http\Controllers\StreamingController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -63,6 +63,8 @@ Route::middleware([
     Route::get('/dashboard/stream/{cameraId}', [DashboardController::class, 'stream']);
     Route::put('/dashboard/update-layout', [DashboardController::class, 'updateLayout'])->name('dashboard.update-layout');
 
+    Route::post('/save-layout', [LayoutController::class, 'saveLayout']);
+    Route::get('/get-layout', [LayoutController::class, 'getLayout']);
 
     Route::get('/user/profile', function () {
         return view('profile.show');

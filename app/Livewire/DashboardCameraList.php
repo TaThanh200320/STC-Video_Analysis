@@ -3,7 +3,6 @@
 namespace App\Livewire;
 
 use App\Models\Camera;
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;

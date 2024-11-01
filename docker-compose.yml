@@ -4,11 +4,13 @@ services:
         image: mysql:8.0
         container_name: mysql
         restart: unless-stopped
+        env_file:
+            - .env
         environment:
-            MYSQL_DATABASE: stc_va
-            MYSQL_ROOT_PASSWORD: root
-            MYSQL_PASSWORD: tathanh200320
-            MYSQL_USER: stc_va
+            - MYSQL_DATABASE=$DB_DATABASE
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_PASSWORD=$DB_PASSWORD
+            - MYSQL_USER=$DB_USERNAME
         ports:
             - "3306:3306"
         volumes:
@@ -16,17 +18,43 @@ services:
         networks:
             - app-network
 
+    admin:
+        image: adminer
+        restart: always
+        depends_on:
+            - mysql
+        ports:
+            - 8080:8080
+        networks:
+            - app-network
+
     redis:
         image: redis:latest
         container_name: redis
         restart: unless-stopped
+        command: >
+            --requirepass ${REDIS_PASSWORD}
+        env_file:
+            - .env
+        environment:
+            REDIS_PASSWORD: tathanh200320
         ports:
             - "6379:6379"
         volumes:
-            - redis:/data
+            - redis_volume_data:/data
         networks:
             - app-network
 
+    redis_insight:
+        image: redislabs/redisinsight:latest
+        container_name: redis_insight
+        restart: unless-stopped
+        ports:
+            - "8001:8001"
+        volumes:
+            - redis_insight_volume_data:/db
+        networks:
+            - app-network
 networks:
     app-network:
         driver: bridge
@@ -34,5 +62,5 @@ networks:
 volumes:
     mysql:
         driver: local
-    redis:
-        driver: local
+    redis_volume_data:
+    redis_insight_volume_data:

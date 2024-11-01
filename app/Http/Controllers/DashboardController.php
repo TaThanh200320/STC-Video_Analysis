@@ -15,7 +15,7 @@ class DashboardController extends Controller
     public function index()
     {
         $cameras = Cache::remember('streaming', Carbon::now()->addMinutes(30), function () {
-            return Camera::select('ten', 'id')->get();
+            return Camera::all();
         });
         $layout = Auth::user()->camera_layout;
         return view('dashboard', compact(['cameras', 'layout']));
