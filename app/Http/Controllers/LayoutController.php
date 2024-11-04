@@ -10,18 +10,25 @@ class LayoutController extends Controller
 {
     public function saveLayout(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'layout' => 'required|array',
             'layout.*.id' => 'required|string',
             'layout.*.x' => 'required|integer',
             'layout.*.y' => 'required|integer',
             'layout.*.w' => 'required|integer',
             'layout.*.h' => 'required|integer',
+            'gridConfig' => 'required|array',
+            'gridConfig.column' => 'required|integer',
+            'gridConfig.itemWidth' => 'required|integer',
+            'gridConfig.maxRow' => 'required|integer',
         ]);
 
         Layout::updateOrCreate(
             ['userId' => Auth::id()],
-            ['layout' => $request->layout]
+            [
+                'layout' => $request->layout,
+                'preferences' => $request->gridConfig
+            ]
         );
 
         return response()->json(['success' => true]);
@@ -32,7 +39,8 @@ class LayoutController extends Controller
         $layout = Layout::where('userId', Auth::id())->first();
 
         return response()->json([
-            'layout' => $layout ? $layout->layout : []
+            'layout' => $layout ? $layout->layout : [],
+            'gridConfig' => $layout ? $layout->preferences : null
         ]);
     }
 }

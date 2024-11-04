@@ -9,9 +9,10 @@ class Layout extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['userId', 'layout'];
+    protected $fillable = ['userId', 'layout', 'preferences'];
 
     protected $casts = [
         'layout' => 'array',
+        'preferences' => 'array',
     ];
 }
