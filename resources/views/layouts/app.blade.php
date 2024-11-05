@@ -10,6 +10,7 @@
     <meta name="description" content="CoreUI - Open Source Bootstrap Admin Template">
     <meta name="author" content="Łukasz Holeczek">
     <meta name="keyword" content="Bootstrap,Admin,Template,Open,Source,jQuery,CSS,HTML,RWD,Dashboard">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'STC Video Analysis')</title>
 
     <!-- ... (các link favicon khác) ... -->

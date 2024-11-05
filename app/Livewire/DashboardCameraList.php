@@ -30,7 +30,7 @@ class DashboardCameraList extends Component
     public function changeLayout($columns)
     {
         $this->dispatch('changeLayout', columns: $columns);
-        $this->updateCameras(); // Gọi phương thức cập nhật danh sách camera
+        $this->updateCameras();
     }
 
     #[Computed()]
@@ -95,14 +95,13 @@ class DashboardCameraList extends Component
     public function selectLocation($locationId)
     {
         $this->selectedLocationId = $locationId;
-        $this->updateCameras(); // Gọi phương thức cập nhật danh sách camera
+        $this->updateCameras();
     }
 
     public function updateCameras()
     {
-        // Xóa cache để làm mới danh sách camera
         Cache::forget('dashboard_cameras_' . $this->search . '_' . $this->selectedLocationId);
-        $this->cameras; // Đảm bảo thuộc tính `cameras` được tính lại
+        $this->cameras;
     }
 
     public function render()

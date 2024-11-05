@@ -61,7 +61,7 @@ Route::middleware([
 ])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/stream/{cameraId}', [DashboardController::class, 'stream']);
-    Route::put('/dashboard/update-layout', [DashboardController::class, 'updateLayout'])->name('dashboard.update-layout');
+    Route::get('/dashboard/cameras', [DashboardController::class, 'getCameras']);
 
     Route::post('/save-layout', [LayoutController::class, 'saveLayout']);
     Route::get('/get-layout', [LayoutController::class, 'getLayout']);

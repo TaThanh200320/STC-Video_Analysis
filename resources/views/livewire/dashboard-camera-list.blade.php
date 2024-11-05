@@ -1,8 +1,8 @@
 <div>
     <div class="grid grid-cols-12 gap-2">
-        <div class="col-span-3 relative p-3 bg-[#212631] text-white">
+        <div class="col-span-3 relative p-3 shadow-md !rounded-none">
+            <h5 class="text-lg font-semibold mb-2">Layout</h5>
             <div class="mb-4">
-                <h5 class="text-lg font-semibold mb-2">Layout</h5>
                 <div class="list-group-item" wire:click.prevent="toggleLayoutOptions">
                     <i class="fas fa-angle-{{ $layoutOptionsOpen ? 'down' : 'right' }}"></i>
                     <i class="fas fa-table"></i>
@@ -11,18 +11,18 @@
 
                 @if ($layoutOptionsOpen)
                     <div class="list-group !rounded-none">
-                        <a href="#" class="list-group-item !pl-[40px]" wire:click.prevent="changeLayout(2)">
+                        <div class="list-group-item !pl-[40px] cursor-pointer" wire:click="changeLayout(2)">
                             <i class="fas fa-th"></i>
                             2x2
-                        </a>
-                        <a href="#" class="list-group-item !pl-[40px]" wire:click.prevent="changeLayout(3)">
+                        </div>
+                        <div class="list-group-item !pl-[40px] cursor-pointer" wire:click="changeLayout(3)">
                             <i class="fas fa-th"></i>
                             2x3
-                        </a>
-                        <a href="#" class="list-group-item !pl-[40px]" wire:click.prevent="changeLayout(4)">
+                        </div>
+                        <div class="list-group-item !pl-[40px] cursor-pointer" wire:click="changeLayout(4)">
                             <i class="fas fa-th"></i>
                             2x4
-                        </a>
+                        </div>
                     </div>
                 @endif
             </div>
@@ -58,7 +58,7 @@
                 @foreach ($this->cameras as $camera)
                     <div class="grid-stack-item" gs-id="canvas-{{ $camera['id'] }}">
                         <div class="grid-stack-item-content">
-                            <canvas class="w-full h-full object-contain" id="canvas-{{ $camera['id'] }}"></canvas>
+                            <canvas class="w-full h-full" id="canvas-{{ $camera['id'] }}"></canvas>
                         </div>
                     </div>
                 @endforeach
@@ -68,17 +68,16 @@
 </div>
 
 <script src="node_modules/gridstack/dist/gridstack-all.js"></script>
+
 <script>
     window.csrfToken = '{{ csrf_token() }}';
-</script>
-<script>
+
     document.addEventListener('livewire:initialized', () => {
         Livewire.on('changeLayout', (data) => {
             changeLayout(data.columns);
         });
     });
-</script>
-<script>
+
     let currentLayout = {
         column: 12,
         itemWidth: 6,
