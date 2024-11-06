@@ -22,6 +22,12 @@ class CameraController extends Controller
         return view('cameras.index', compact('cameras'));
     }
 
+    public function getByid($id)
+    {
+        $camera = Camera::findOrFail($id);
+        return response()->json($camera, 200);
+    }
+
     public function create()
     {
         $areas = Cache::remember('areas_in_cameras', Carbon::now()->addMinutes(30), function () {
@@ -168,17 +174,6 @@ class CameraController extends Controller
 
         return response()->json([
             'rtspUrl' => $url
-        ]);
-    }
-
-    public function getActiveCameras()
-    {
-        $cameras = Cache::remember('active_cameras', Carbon::now()->addMinutes(30), function () {
-            return Camera::where('trangthai', '=', 'hoatdong')->get();
-        });
-
-        return response()->json([
-            'cameras' => $cameras
         ]);
     }
 }

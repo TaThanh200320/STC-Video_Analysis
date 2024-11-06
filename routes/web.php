@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [AuthController::class, 'login']);
 Route::prefix('cameras')->group(function () {
     Route::get('/{id}/rtsp-url', [CameraController::class, 'getRtspUrl']);
-    Route::get('/active', [CameraController::class, 'getActiveCameras']);
 });
 
 Route::group(['middleware' => ['role:super-admin|admin|editor']], function () {
@@ -46,6 +45,7 @@ Route::group(['middleware' => ['role:super-admin|admin|editor']], function () {
     Route::get('configurations/groups/{areaId}/delete', [GroupController::class, 'destroy']);
 
     Route::get('cameras', [CameraController::class, 'index'])->name('cameras');
+    Route::get('cameras/{id}', [CameraController::class, 'getByid']);
     Route::get('cameras/create', [CameraController::class, 'create'])->name('cameras.create');
     Route::post('cameras/store', [CameraController::class, 'store'])->name('cameras.store');
     Route::get('cameras/{cameraId}/edit', [CameraController::class, 'edit'])->name('cameras.edit');

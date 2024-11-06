@@ -5,8 +5,8 @@
         cols: 2,
         totalCells: 4
     };
-
     let gridCells = []; // Track empty cells
+    let addedCameras = new Set();
 
     function initializeGrid() {
         if (grid) {
@@ -19,11 +19,15 @@
         grid = GridStack.init({
             column: gridWidth,
             maxRow: currentLayout.rows,
-            cellHeight: '300px',
+            cellHeight: '50%',
             float: true,
             disableResize: true,
             disableDrag: false,
             staticGrid: false
+        });
+
+        grid.on('change', function(event, items) {
+            saveLayout();
         });
 
         // Create empty grid cells
@@ -35,6 +39,7 @@
     function createEmptyCells() {
         grid.removeAll();
         gridCells = [];
+        addedCameras.clear();
 
         for (let i = 0; i < currentLayout.totalCells; i++) {
             const row = Math.floor(i / currentLayout.cols);
@@ -60,6 +65,7 @@
         }
     }
 
+
     function createEmptyCell(index) {
         const div = document.createElement('div');
         div.className = 'grid-stack-item';
@@ -77,7 +83,7 @@
         const div = document.createElement('div');
         div.className = 'grid-stack-item';
         const canvasId = `canvas-${camera.id}`;
-        div.setAttribute('gs-id', canvasId);
+        div.setAttribute('gridstack-id', canvasId);
         div.setAttribute('data-cell-type', 'camera');
         div.setAttribute('data-camera-id', camera.id);
         div.innerHTML = `
@@ -96,9 +102,11 @@
             totalCells: rows * cols
         };
 
+        addedCameras.clear(); // Clear the set of added cameras
         initializeGrid();
         saveLayout();
     }
+
 
     async function loadCameras(locationId) {
         try {
@@ -123,22 +131,34 @@
     }
 
     function assignCameraToNextCell(camera) {
-        // Find first empty cell
-        const emptyCell = gridCells.find(cell => !cell.cameraId);
-        if (!emptyCell) {
-            alert('No empty cells available');
+        // Check if the camera has already been added
+        if (addedCameras.has(camera.id)) {
+            alert('This camera has already been added to the grid.');
             return;
         }
 
-        const row = Math.floor(emptyCell.index / currentLayout.cols);
-        const col = emptyCell.index % currentLayout.cols;
+        // Find first empty cell or the last cell
+        let targetCell = gridCells.find(cell => !cell.cameraId) || gridCells[gridCells.length - 1];
+
+        if (!targetCell) {
+            alert('No available cells to add the camera.');
+            return;
+        }
+
+        const row = Math.floor(targetCell.index / currentLayout.cols);
+        const col = targetCell.index % currentLayout.cols;
         const itemWidth = Math.floor(12 / currentLayout.cols);
 
-        // Remove empty cell widget
-        grid.removeWidget(emptyCell.element);
+        // Remove existing widget if any
+        const existingWidget = grid.engine.nodes.find(
+            node => node.x === col * itemWidth && node.y === row
+        );
+        if (existingWidget) {
+            grid.removeWidget(existingWidget.el);
+        }
 
         // Add camera widget
-        const cameraElement = createCameraCell(camera, emptyCell.index);
+        const cameraElement = createCameraCell(camera, targetCell.index);
         grid.makeWidget(cameraElement, {
             x: col * itemWidth,
             y: row,
@@ -150,14 +170,18 @@
         });
 
         // Update cell state
-        emptyCell.cameraId = camera.id;
-        emptyCell.element = cameraElement;
+        targetCell.cameraId = camera.id;
+        targetCell.element = cameraElement;
+
+        // Add camera to the set of added cameras
+        addedCameras.add(camera.id);
 
         // Initialize stream
         initializeStream(camera.id);
 
         saveLayout();
     }
+
 
     function initializeStream(cameraId) {
         loadPlayer({
@@ -185,35 +209,34 @@
 
     async function saveLayout() {
         try {
-            const layout = grid.engine.nodes.map(node => {
-                // Get the element
+            // Get all grid items and create a Map to track unique positions
+            const gridItems = new Map();
+
+            grid.engine.nodes.forEach(node => {
                 const element = node.el;
-                let id;
+                const cellType = element.getAttribute('data-cell-type');
+                const cameraId = element.getAttribute('data-camera-id');
+                const cellIndex = element.getAttribute('data-cell-index');
 
-                // Check if this is a camera cell or empty cell
-                const gsId = element.getAttribute('gs-id');
-                if (gsId) {
-                    // This is a camera cell
-                    id = gsId;
-                } else {
-                    // This is an empty cell
-                    // Get the slot number from the content
-                    const slotText = element.querySelector('.grid-stack-item-content span')?.textContent;
-                    const slotNumber = slotText ? slotText.match(/\d+/)[0] : node.id;
-                    id = `empty-slot-${slotNumber}`;
+                // Create a unique position key based on x and y coordinates
+                const positionKey = `${node.x},${node.y}`;
+
+                // If this position already has an item and the current item is a camera,
+                // or if this position is empty and hasn't been filled yet
+                if (!gridItems.has(positionKey) || cellType === 'camera') {
+                    gridItems.set(positionKey, {
+                        id: cameraId || `empty-slot-${cellIndex}`,
+                        type: cellType || 'empty',
+                        x: node.x,
+                        y: node.y,
+                        w: node.w,
+                        h: node.h
+                    });
                 }
-
-                return {
-                    id: id,
-                    type: gsId ? 'camera' : 'empty',
-                    x: node.x,
-                    y: node.y,
-                    w: node.w,
-                    h: node.h
-                };
             });
 
-            console.log('Saving layout:', layout); // For debugging
+            // Convert Map values to array for the final layout
+            const layout = Array.from(gridItems.values());
 
             const response = await fetch('/save-layout', {
                 method: 'POST',
@@ -234,39 +257,153 @@
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-
-            const result = await response.json();
-            console.log('Layout saved successfully:', result);
         } catch (error) {
             console.error('Error saving layout:', error);
         }
     }
 
+    function isCameraItem(item) {
+        return item && item.type === 'camera' && !item.id.startsWith('empty-slot-');
+    }
+
+    async function getCameraById(cameraId) {
+        try {
+            const response = await fetch(`/cameras/${cameraId}`);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch camera ${cameraId}: ${response.status}`);
+            }
+            const camera = await response.json();
+            if (!camera) {
+                throw new Error(`No camera found with ID ${cameraId}`);
+            }
+            return camera;
+        } catch (error) {
+            console.error('Error in getCameraById:', error);
+            return null;
+        }
+    }
+
+    function validateLayoutData(layout) {
+        if (!Array.isArray(layout)) return false;
+
+        return layout.every(item => {
+            return (
+                item &&
+                typeof item.id === 'string' &&
+                typeof item.type === 'string' &&
+                typeof item.x === 'number' &&
+                typeof item.y === 'number' &&
+                typeof item.w === 'number' &&
+                typeof item.h === 'number'
+            );
+        });
+    }
+
+    function assignCameraToCell(camera, x, y) {
+        if (addedCameras.has(camera.id)) {
+            return;
+        }
+
+        const itemWidth = Math.floor(12 / currentLayout.cols);
+        const cameraElement = createCameraCell(camera);
+
+        grid.makeWidget(cameraElement, {
+            x: x,
+            y: y,
+            w: itemWidth,
+            h: 1,
+            autoPosition: false,
+            noResize: true,
+            noMove: false
+        });
+
+        addedCameras.add(camera.id);
+        initializeStream(camera.id);
+    }
+
     // Initialize when document is ready
     document.addEventListener('DOMContentLoaded', async () => {
-        // Initialize default grid
-        initializeGrid();
-
-        // Load saved layout
         try {
+            // Load saved layout
             const response = await fetch('/get-layout');
             const data = await response.json();
 
             if (data.gridConfig) {
                 const cols = 12 / data.gridConfig.itemWidth;
-                const layout = `2x${cols}`;
-                changeLayout(layout);
+                currentLayout = {
+                    rows: 2,
+                    cols: cols,
+                    totalCells: 2 * cols
+                };
             }
-        } catch (error) {
-            console.error('Error loading layout:', error);
-        }
 
-        // Setup layout option events
-        document.querySelectorAll('#layoutOptions .location-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const layout = item.getAttribute('data-layout');
-                changeLayout(layout);
+            // Initialize empty grid first
+            initializeGrid();
+
+            // If we have saved layout data, restore cameras
+            if (data.layout && Array.isArray(data.layout)) {
+                // Filter only cameras item
+                const cameraItems = data.layout.filter(isCameraItem);
+
+                // Restore camrea
+                for (const item of cameraItems) {
+                    try {
+                        const cameraId = item.id;
+                        const camera = await getCameraById(cameraId);
+
+                        if (camera) {
+                            // Calculate camera position
+                            const col = item.x / (12 / currentLayout.cols);
+                            const row = item.y;
+                            const cellIndex = row * currentLayout.cols + col;
+
+                            // Find camera position
+                            const targetCell = gridCells[cellIndex];
+
+                            if (targetCell) {
+                                // Remove existing content if any
+                                if (targetCell.element) {
+                                    grid.removeWidget(targetCell.element);
+                                }
+
+                                // Create and add camera widget
+                                const cameraElement = createCameraCell(camera, cellIndex);
+                                grid.makeWidget(cameraElement, {
+                                    x: item.x,
+                                    y: item.y,
+                                    w: item.w,
+                                    h: item.h,
+                                    autoPosition: false,
+                                    noResize: true,
+                                    noMove: false
+                                });
+
+                                // Update cell state
+                                targetCell.cameraId = camera.id;
+                                targetCell.element = cameraElement;
+                                addedCameras.add(camera.id);
+
+                                // Initialize stream
+                                initializeStream(camera.id);
+                            }
+                        }
+                    } catch (error) {
+                        console.error(`Error restoring camera ${item.id}:`, error);
+                    }
+                }
+            }
+
+            // Setup layout option events
+            document.querySelectorAll('#layoutOptions .location-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const layout = item.getAttribute('data-layout');
+                    changeLayout(layout);
+                });
             });
-        });
+        } catch (error) {
+            console.error('Error initializing dashboard:', error);
+            // Initialize with default grid if loading fails
+            initializeGrid();
+        }
     });
 </script> --}}

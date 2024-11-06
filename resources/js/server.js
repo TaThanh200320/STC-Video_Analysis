@@ -37,8 +37,8 @@ wss.on('connection', async (ws, req) => {
             url: cameraUrl,
             verbose: true,
             transport: 'tcp',
-            bufferSize: 512 * 1024,      // Tăng buffer size cho stream ổn định
-            timeout: 30 * 1000           // Timeout 30 giây
+            bufferSize: 512 * 1024,      // Increase buffer size 
+            timeout: 30 * 1000           // Timeout in milliseconds
         })(ws);
     } else {
         ws.close();
