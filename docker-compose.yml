@@ -77,14 +77,15 @@ services:
         networks:
             - app-network
 
-    redis_insight:
-        image: redislabs/redisinsight:latest
-        container_name: redis_insight
-        restart: unless-stopped
+    redisinsight:
+        image: redislabs/redisinsight:1.12.0
+        restart: always
         ports:
             - "8001:8001"
         volumes:
             - redis_insight_volume_data:/db
+        depends_on:
+            - redis
         networks:
             - app-network
 

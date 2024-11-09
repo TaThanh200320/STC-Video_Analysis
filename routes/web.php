@@ -45,13 +45,13 @@ Route::group(['middleware' => ['role:super-admin|admin|editor']], function () {
     Route::get('configurations/groups/{areaId}/delete', [GroupController::class, 'destroy']);
 
     Route::get('cameras', [CameraController::class, 'index'])->name('cameras');
-    Route::get('cameras/{id}', [CameraController::class, 'getByid']);
     Route::get('cameras/create', [CameraController::class, 'create'])->name('cameras.create');
     Route::post('cameras/store', [CameraController::class, 'store'])->name('cameras.store');
     Route::get('cameras/{cameraId}/edit', [CameraController::class, 'edit'])->name('cameras.edit');
     Route::put('cameras/{cameraId}', [CameraController::class, 'update'])->name('cameras.update');
     Route::get('cameras/{cameraId}/delete', [CameraController::class, 'destroy']);
     Route::get('cameras/detail', [CameraController::class, 'detail'])->name('cameras.detail');
+    Route::get('cameras/{id}', [CameraController::class, 'getByid']);
 });
 
 Route::middleware([
